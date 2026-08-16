@@ -137,10 +137,28 @@ try {
       .meta {
         font-size: 0.95rem;
         color: var(--text-muted);
-        margin-bottom: 15px;
-        border-bottom: 1px solid #f0ece1;
-        padding-bottom: 10px;
+        margin-bottom: 12px;
         font-weight: 600;
+      }
+      .vibe-teaser {
+        font-style: italic;
+        color: #555;
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+      }
+      details {
+        border-top: 1px solid #f0ece1;
+        padding-top: 15px;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--accent);
+        font-size: 0.95rem;
+        user-select: none;
+      }
+      summary:hover {
+        text-decoration: underline;
       }
       .review-body {
         margin-top: 15px;
@@ -194,13 +212,26 @@ try {
 
         {booksWithContent.map((book) => {
           const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
-          const author = book.properties["Author name for Blog"]?.rollup?.array?.[0]?.title?.[0]?.plain_text || "Unknown Author";
+          
+          const authorArray = book.properties["Author name for Blog"]?.rollup?.array;
+          let author = "Unknown Author";
+          if (authorArray && authorArray.length > 0) {
+            const names = authorArray.map((item) => item.title?.[0]?.plain_text).filter(Boolean);
+            if (names.length > 0) author = names.join(", ");
+          }
 
           const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
           let rating = "";
           if (ratingProp?.type === "number") rating = ratingProp.number.toString();
           else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
           else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
+
+          // Grab the Vibe property (handles select, multi_select, or rich_text)
+          const vibeProp = book.properties["Vibe"] || book.properties["Genre"];
+          let vibe = "";
+          if (vibeProp?.type === "select") vibe = vibeProp.select?.name || "";
+          else if (vibeProp?.type === "multi_select") vibe = vibeProp.multi_select?.map(v => v.name).join(", ") || "";
+          else if (vibeProp?.type === "rich_text") vibe = vibeProp.rich_text?.[0]?.plain_text || "";
           
           return (
             <div class="book-card">
@@ -209,13 +240,19 @@ try {
                 <span><strong>Author:</strong> {author}</span>
                 {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
               </div>
-              <div class="review-body">
-                {book.contentBlocks.map((block) => (
-                  block.type === "paragraph" && block.paragraph.rich_text.length > 0 
-                    ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
-                    : null
-                ))}
-              </div>
+
+              {vibe && <div class="vibe-teaser">Vibe: {vibe}</div>}
+              
+              <details>
+                <summary>Read Review</summary>
+                <div class="review-body">
+                  {book.contentBlocks.map((block) => (
+                    block.type === "paragraph" && block.paragraph.rich_text.length > 0 
+                      ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
+                      : null
+                  ))}
+                </div>
+              </details>
             </div>
           );
         })}
