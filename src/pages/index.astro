@@ -34,62 +34,192 @@ try {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>My Book Reviews</title>
+    <title>Cherie Reads</title>
     <style>
-      body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #333; background: #fdfbf7; }
-      h1 { border-bottom: 2px solid #eae6df; padding-bottom: 10px; }
-      .book-card { background: #ffffff; border: 1px solid #eae6df; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-      .meta { font-size: 0.95rem; color: #555; margin-bottom: 15px; border-bottom: 1px solid #f0ece1; padding-bottom: 10px; font-weight: 600; }
-      .review-body { margin-top: 15px; }
-      .review-body p { margin-bottom: 1em; }
-      .error { background: #ffebee; color: #c62828; padding: 15px; border-radius: 6px; }
+      :root {
+        --bg-color: #fdfbf7;
+        --card-bg: #ffffff;
+        --border-color: #eae6df;
+        --text-color: #333;
+        --text-muted: #666;
+        --accent: #8b5a2b;
+      }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+      header {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: var(--accent);
+        letter-spacing: -0.5px;
+      }
+      nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+      nav a:hover {
+        color: var(--accent);
+      }
+      .layout {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        gap: 40px;
+      }
+      aside {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        height: fit-content;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+      }
+      aside h3 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+      }
+      .filter-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .filter-list li {
+        margin-bottom: 10px;
+      }
+      .filter-list a {
+        color: var(--text-muted);
+        text-decoration: none;
+        display: block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      .filter-list a:hover {
+        background: #f4efe6;
+        color: var(--accent);
+      }
+      .feed {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .book-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      }
+      .book-card h2 {
+        margin-top: 0;
+        margin-bottom: 8px;
+      }
+      .meta {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+        border-bottom: 1px solid #f0ece1;
+        padding-bottom: 10px;
+        font-weight: 600;
+      }
+      .review-body {
+        margin-top: 15px;
+      }
+      .review-body p {
+        margin-bottom: 1em;
+      }
+      .error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 6px;
+      }
+      @media (max-width: 768px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
-    <h1>My Reading Journal & Reviews</h1>
-    {errorMessage && <div class="error"><p><strong>Error:</strong> {errorMessage}</p></div>}
-    
-    {booksWithContent.length === 0 && !errorMessage && (
-      <p>No reviewed books found yet. Check the "Reviewed" box on a book page in your Notion library to publish it here!</p>
-    )}
+    <header>
+      <h1>Cherie Reads</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="#about">About</a>
+      </nav>
+    </header>
 
-    <div>
-      {booksWithContent.map((book) => {
-        const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
-        
-        // Handle single or multiple authors cleanly from the rollup array
-        const authorArray = book.properties["Author name for Blog"]?.rollup?.array;
-        let author = "Unknown Author";
-        if (authorArray && authorArray.length > 0) {
-          const names = authorArray.map((item) => item.title?.[0]?.plain_text).filter(Boolean);
-          if (names.length > 0) {
-            author = names.join(", ");
-          }
-        }
+    <div class="layout">
+      <!-- Sidebar Navigation / Filters -->
+      <aside>
+        <h3>Filter Reviews</h3>
+        <p style="font-size: 0.85rem; color: #777;">Browse by rating or view all published thoughts.</p>
+        <ul class="filter-list">
+          <li><a href="/">All Reviews</a></li>
+          <li><a href="#5-stars">5 Star Reads</a></li>
+          <li><a href="#4-stars">4 Star Reads</a></li>
+          <li><a href="#fantasy">Fantasy</a></li>
+          <li><a href="#sci-fi">Sci-Fi</a></li>
+        </ul>
+      </aside>
 
-        const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
-        let rating = "";
-        if (ratingProp?.type === "number") rating = ratingProp.number.toString();
-        else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
-        else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
+      <!-- Main Review Feed -->
+      <main class="feed">
+        {errorMessage && <div class="error"><p><strong>Error:</strong> {errorMessage}</p></div>}
         
-        return (
-          <div class="book-card">
-            <h2>{title}</h2>
-            <div class="meta">
-              <span><strong>Author:</strong> {author}</span>
-              {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
+        {booksWithContent.length === 0 && !errorMessage && (
+          <p>No reviewed books found yet. Check the "Reviewed" box on a book page in your Notion library to publish it here!</p>
+        )}
+
+        {booksWithContent.map((book) => {
+          const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
+          const author = book.properties["Author name for Blog"]?.rollup?.array?.[0]?.title?.[0]?.plain_text || "Unknown Author";
+
+          const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
+          let rating = "";
+          if (ratingProp?.type === "number") rating = ratingProp.number.toString();
+          else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
+          else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
+          
+          return (
+            <div class="book-card">
+              <h2>{title}</h2>
+              <div class="meta">
+                <span><strong>Author:</strong> {author}</span>
+                {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
+              </div>
+              <div class="review-body">
+                {book.contentBlocks.map((block) => (
+                  block.type === "paragraph" && block.paragraph.rich_text.length > 0 
+                    ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
+                    : null
+                ))}
+              </div>
             </div>
-            <div class="review-body">
-              {book.contentBlocks.map((block) => (
-                block.type === "paragraph" && block.paragraph.rich_text.length > 0 
-                  ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
-                  : null
-              ))}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </main>
     </div>
   </body>
 </html>
