@@ -42,7 +42,7 @@ try {
         --border-color: #c4d6c7;
         --text-color: #2c352d;
         --text-muted: #556358;
-        --accent: #1e3d24; /* Richer, deeper forest green */
+        --accent: #1e3d24;
         --accent-hover: #122617;
         --cream-accent: #5a5347;
         --cream-bg: #f3eee3;
@@ -74,10 +74,9 @@ try {
         gap: 12px;
       }
       .brand-icon {
-        width: 26px;
-        height: 26px;
-        fill: var(--accent);
-        opacity: 0.85;
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
       }
       header h1 {
         margin: 0;
@@ -279,9 +278,7 @@ try {
   <body>
     <header>
       <div class="brand-container">
-       <svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z M6 6h5v6H6zm6 0h5v6h-5z"/>
-        </svg>
+        <img src="/leaf-svgrepo-com.svg" alt="Leaf Icon" class="brand-icon" />
         <h1>Cherie Reads</h1>
       </div>
       <nav>
