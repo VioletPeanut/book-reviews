@@ -68,39 +68,45 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
   coverUrl = fileItem.file?.url || fileItem.external?.url || "";
 }
 
-// Complete definition dictionary with distinct keys
+function renderStars(ratingStr) {
+  const num = parseFloat(ratingStr);
+  if (isNaN(num)) return ratingStr;
+  
+  const fullStars = Math.floor(num);
+  const hasHalfStar = num - fullStars >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  
+  let stars = "★".repeat(fullStars);
+  if (hasHalfStar) stars += "⯨";
+  stars += "☆".repeat(emptyStars);
+  
+  return `${stars} ${num.toFixed(num % 1 !== 0 ? 1 : 0)}`;
+}
+
 const definitions: Record<string, string> = {
-  // Pace
   "Slow Burn": "Deliberate pacing that gradually builds characters, world, or plot.",
   "Steady": "Consistent pacing with a balance between quieter and faster moments.",
   "Page Turner": "Difficult to put down because of suspense, action, or constant momentum.",
-  // Brainpower
   "Easy": "Accessible and straightforward.",
   "Moderate": "Requires some attention but remains easy to follow.",
   "Challenging": "Dense, layered, philosophical, or structurally complex.",
-  // Story Focus
   "Character Driven": "Relationships, growth, and personal journeys are the primary focus.",
   "Plot Driven": "Events, action, or solving problems drive the story.",
   "Balanced": "Characters and plot receive roughly equal attention.",
-  // Romance Level
   "None": "No meaningful romantic storyline.",
   "Light": "A minor romantic subplot.",
   "Moderate": "Romance is important but not the primary focus.",
   "Heavy": "Romance is one of the central elements of the story.",
-  // Stakes
   "Low": "Consequences are mostly personal.",
   "Medium": "Consequences affect families, communities, or smaller groups.",
   "High": "Failure affects kingdoms, civilizations, or the world.",
-  // Worldbuilding
-  "Light": "The setting is easy to understand with little explanation.",
-  "Moderate": "The world has unique elements but remains accessible.",
+  "Light World": "The setting is easy to understand with little explanation.",
+  "Moderate World": "The world has unique elements but remains accessible.",
   "Dense": "Complex history, cultures, politics, or magic require sustained attention.",
-  // Length Feel
   "Short": "Feels like a quick read.",
-  "Medium": "Feels like an average reading commitment.",
+  "Medium Length": "Feels like an average reading commitment.",
   "Long": "Feels like a significant investment of time.",
 
-  // Moods
   "Atmospheric": "The setting and mood are a major part of the reading experience, creating a vivid sense of place.",
   "Adventurous": "Filled with exploration, action, or exciting discoveries that create a sense of adventure.",
   "Cozy": "Comforting, low-stress, and relaxing. Usually leaves you feeling safe or content.",
@@ -117,7 +123,6 @@ const definitions: Record<string, string> = {
   "Heartbreaking": "An emotionally devastating story that explores grief, loss, sacrifice, or profound sadness, often leaving a lasting emotional impact.",
   "Romantic": "A story where love, relationships, or romantic tension create a warm, swoon-worthy, or emotionally intimate reading experience.",
 
-  // Tropes
   "Academy": "Features a school, university, or formal training environment.",
   "Amateur Sleuth": "An ordinary person, rather than a professional investigator, solves the central mystery.",
   "Arranged Marriage": "Characters marry because of outside circumstances.",
@@ -304,7 +309,6 @@ const definitions: Record<string, string> = {
         padding: 0;
         list-style: none;
       }
-      /* Tooltip Tag Styling */
       .tag {
         background: var(--sage-bg);
         color: var(--sage-accent);
@@ -315,7 +319,6 @@ const definitions: Record<string, string> = {
         position: relative;
         cursor: help;
       }
-      /* Hover Tooltip Popup */
       .tag:hover::after {
         content: attr(data-tooltip);
         position: absolute;
@@ -348,15 +351,17 @@ const definitions: Record<string, string> = {
         color: var(--text-muted);
         margin-bottom: 24px;
         font-weight: 500;
+        align-items: center;
       }
       .rating-badge {
         background: var(--gold-bg);
         color: var(--gold-accent);
         border: 1px solid var(--gold-border);
-        padding: 2px 10px;
+        padding: 3px 10px;
         border-radius: 4px;
         font-size: 0.9rem;
         font-weight: 600;
+        letter-spacing: 1px;
       }
       .vibe-callout {
         font-family: var(--serif-font);
@@ -402,6 +407,7 @@ const definitions: Record<string, string> = {
       </a>
       <nav>
         <a href="/">Home</a>
+        <a href="/guide">Guide</a>
         <a href="/about">About</a>
       </nav>
     </header>
@@ -470,7 +476,7 @@ const definitions: Record<string, string> = {
           <h2>{title}</h2>
           <div class="review-meta-bar">
             <span><strong>Author:</strong> {author}</span>
-            {rating && <span class="rating-badge">Rating: {rating} ★</span>}
+            {rating && <span class="rating-badge">{renderStars(rating)}</span>}
           </div>
 
           {vibe && <div class="vibe-callout">{vibe}</div>}
