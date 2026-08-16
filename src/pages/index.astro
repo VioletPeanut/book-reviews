@@ -81,23 +81,40 @@ try {
 
     <div>
       {books.map((book) => {
-        // Grab the title using your exact "Title" property name
         const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
         
-        // Since Author is a relation, it returns an array of linked page IDs. 
-        // We can indicate it's a linked relation (or display a friendly label).
-        const authorRelation = book.properties["Author"]?.relation;
-        const author = authorRelation && authorRelation.length > 0 ? "Author Linked" : "Unknown Author";
+        // Handle Author whether it's stored as a relation, rich text, or select
+        const authorProp = book.properties["Author"];
+        let author = "Unknown Author";
+        if (authorProp?.type === "relation") {
+          author = authorProp.relation.length > 0 ? "Linked Author" : "Unknown Author";
+        } else if (authorProp?.rich_text) {
+          author = authorProp.rich_text[0]?.plain_text || "Unknown Author";
+        } else if (authorProp?.select) {
+          author = authorProp.select.name;
+        }
 
-        const rating = book.properties["Rating Number"]?.number || book.properties["Star Rating"]?.select?.name || "No rating";
-        const format = book.properties["Format"]?.select?.name || "";
+        // Grab rating without adding duplicate stars
+        const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
+        let rating = "No rating";
+        if (ratingProp?.type === "number") {
+          rating = ratingProp.number;
+        } else if (ratingProp?.type === "select") {
+          rating = ratingProp.select?.name || "No rating";
+        } else if (ratingProp?.type === "formula") {
+          if (ratingProp.formula?.type === "string") {
+            rating = ratingProp.formula.string;
+          } else if (ratingProp.formula?.type === "number") {
+            rating = ratingProp.formula.number;
+          }
+        }
         
         return (
           <div class="book-card">
             <h2>{title}</h2>
             <div class="meta">
               <p><strong>Author:</strong> {author}</p>
-              <p><strong>Rating:</strong> {rating} ⭐ | <strong>Format:</strong> {format}</p>
+              <p><strong>Rating:</strong> {rating}</p>
             </div>
           </div>
         );
