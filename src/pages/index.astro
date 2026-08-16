@@ -35,6 +35,7 @@ try {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>Cherie Reads</title>
+    <script defer src="/_vercel/insights/script.js"></script>
     <style>
       :root {
         --bg-color: #fdfbf7;
@@ -128,19 +129,43 @@ try {
         border-radius: 8px;
         padding: 24px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        transition: opacity 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        gap: 20px;
+      }
+      .book-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       }
       .book-card.hidden {
         display: none;
       }
+      .cover-container {
+        flex-shrink: 0;
+        width: 90px;
+        height: 135px;
+        background: #f4efe6;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+      }
+      .cover-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .book-info {
+        flex-grow: 1;
+      }
       .book-card h2 {
         margin-top: 0;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
+        font-size: 1.4rem;
       }
       .meta {
         font-size: 0.95rem;
         color: var(--text-muted);
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         font-weight: 600;
       }
       .vibe-teaser {
@@ -151,7 +176,7 @@ try {
       }
       details {
         border-top: 1px solid #f0ece1;
-        padding-top: 15px;
+        padding-top: 12px;
       }
       summary {
         cursor: pointer;
@@ -179,9 +204,16 @@ try {
         .layout {
           grid-template-columns: 1fr;
         }
+        .book-card {
+          flex-direction: column;
+        }
+        .cover-container {
+          width: 100px;
+          height: 150px;
+          margin-bottom: 10px;
+        }
       }
-<script defer src="/_vercel/insights/script.js"></script>
-</style>
+    </style>
   </head>
   <body>
     <header>
@@ -251,27 +283,42 @@ try {
           if (vibeProp?.type === "select") vibe = vibeProp.select?.name || "";
           else if (vibeProp?.type === "multi_select") vibe = vibeProp.multi_select?.map(v => v.name).join(', ') || "";
           else if (vibeProp?.type === "rich_text") vibe = vibeProp.rich_text?.[0]?.plain_text || "";
+
+          // Extract image from Files & Media property (handles uploaded files or external links)
+          const mediaProp = book.properties["Cover"] || book.properties["Files & media"] || book.properties["Image"];
+          let coverUrl = "";
+          if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
+            const fileItem = mediaProp.files[0];
+            coverUrl = fileItem.file?.url || fileItem.external?.url || "";
+          }
           
           return (
             <div class="book-card" data-rating={rating} data-genre={vibe}>
-              <h2>{title}</h2>
-              <div class="meta">
-                <span><strong>Author:</strong> {author}</span>
-                {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
-              </div>
-
-              {vibe && <div class="vibe-teaser">Vibe: {vibe}</div>}
-              
-              <details>
-                <summary>Read Review</summary>
-                <div class="review-body">
-                  {book.contentBlocks.map((block) => (
-                    block.type === "paragraph" && block.paragraph.rich_text.length > 0 
-                      ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
-                      : null
-                  ))}
+              {coverUrl && (
+                <div class="cover-container">
+                  <img src={coverUrl} alt={`Cover of ${title}`} loading="lazy" />
                 </div>
-              </details>
+              )}
+              <div class="book-info">
+                <h2>{title}</h2>
+                <div class="meta">
+                  <span><strong>Author:</strong> {author}</span>
+                  {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
+                </div>
+
+                {vibe && <div class="vibe-teaser">Vibe: {vibe}</div>}
+                
+                <details>
+                  <summary>Read Review</summary>
+                  <div class="review-body">
+                    {book.contentBlocks.map((block) => (
+                      block.type === "paragraph" && block.paragraph.rich_text.length > 0 
+                        ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
+                        : null
+                    ))}
+                  </div>
+                </details>
+              </div>
             </div>
           );
         })}
