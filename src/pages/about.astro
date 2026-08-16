@@ -1,0 +1,116 @@
+---
+// About page for Cherie Reads
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>About | Cherie Reads</title>
+    <style>
+      :root {
+        --bg-color: #fdfbf7;
+        --card-bg: #ffffff;
+        --border-color: #eae6df;
+        --text-color: #333;
+        --text-muted: #666;
+        --accent: #8b5a2b;
+      }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+      header {
+        background: var(--card-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: var(--accent);
+        letter-spacing: -0.5px;
+      }
+      nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+      nav a:hover {
+        color: var(--accent);
+      }
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      }
+      h2 {
+        color: var(--accent);
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 8px;
+        margin-top: 0;
+      }
+      h3 {
+        margin-top: 30px;
+        color: var(--accent);
+      }
+      .profile-links {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+      }
+      .profile-links li {
+        margin-bottom: 10px;
+      }
+      .profile-links a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .profile-links a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Cherie Reads</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+      </nav>
+    </header>
+
+    <div class="container">
+      <h2>About Me</h2>
+      <p>Welcome to Cherie Reads! I am a lifelong reader who often feels much more at home in the pages of a book than in the real world. For me, reading has always been a quiet sanctuary and a wonderful way to explore completely different lives, worlds, and perspectives.</p>
+      
+      <h3>What You Will Find Here</h3>
+      <p>I read widely across all genres, though I hold a special fondness for sweeping fantasy and rich historical fiction. Above all, I am drawn to stories that pack a genuine emotional punch, feature characters who feel like real, flawed people, and make me think about the world in entirely new ways.</p>
+      <p>This space serves as my digital reading journal. I created it to catalog my thoughts, organize my reviews by star ratings and genres, and share my love of reading with fellow book enthusiasts.</p>
+
+      <h3>Find Me Online</h3>
+      <p>If you want to connect, say hello, or share a book recommendation, you can reach me directly at <a href="mailto:cheriereads@gmail.com">cheriereads@gmail.com</a>. You can also find my virtual bookshelves and reading stats across these platforms:</p>
+      
+      <ul class="profile-links">
+        <li>Goodreads: <a href="https://www.goodreads.com/cheriereads" target="_blank">cheriereads</a></li>
+        <li>Pagebound: <a href="https://pagebound.co/users/VioletPeanut" target="_blank">VioletPeanut</a></li>
+        <li>Hardcover: <a href="https://hardcover.app/@VioletPeanut" target="_blank">@VioletPeanut</a></li>
+        <li>Fable: <a href="https://fable.co/fabler/cherie-344162723581" target="_blank">Cherie on Fable</a></li>
+        <li>StoryGraph: VioletPeanut</li>
+      </ul>
+    </div>
+  </body>
+</html>
