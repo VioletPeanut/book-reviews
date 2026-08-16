@@ -16,31 +16,12 @@ try {
     sorts: [{ property: "Date Finished", direction: "descending" }]
   });
 
+  // Since we are using a rollup, we only need to fetch the page content blocks now!
   booksWithContent = await Promise.all(
     response.results.map(async (book) => {
       const blocksResponse = await notion.blocks.children.list({ block_id: book.id });
-      
-      let authorName = "Unknown Author";
-      const authorProp = book.properties["Author"];
-      
-      if (authorProp?.type === "relation" && authorProp.relation.length > 0) {
-        try {
-          const authorPage = await notion.pages.retrieve({ page_id: authorProp.relation[0].id });
-          // Find the title property dynamically on the linked page
-          const titleKey = Object.keys(authorPage.properties).find(
-            (key) => authorPage.properties[key].type === "title"
-          );
-          if (titleKey) {
-            authorName = authorPage.properties[titleKey].title?.[0]?.plain_text || "Unknown Author";
-          }
-        } catch (e) {
-          authorName = "Linked Author";
-        }
-      }
-
       return {
         ...book,
-        resolvedAuthor: authorName,
         contentBlocks: blocksResponse.results,
       };
     })
@@ -49,7 +30,7 @@ try {
   errorMessage = error.message;
 }
 ---
-<!-- Keep the rest of your HTML/Style unchanged -->
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -71,6 +52,23 @@ try {
     <div>
       {booksWithContent.map((book) => {
         const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
+        
+        // Grab the author name directly from your new Rollup property!
+        const authorProp = book.properties["Author name for Blog"];
+        let author = "Unknown Author";
+        if (authorProp?.type === "rollup") {
+          if (authorProp.rollup.type === "array" && authorProp.rollup.array.length > 0) {
+            const firstItem = authorProp.rollup.array[0];
+            if (firstItem.type === "title") {
+              author = firstItem.title[0]?.plain_text || "Unknown Author";
+            } else if (firstItem.type === "rich_text") {
+              author = firstItem.rich_text[0]?.plain_text || "Unknown Author";
+            }
+          } else if (authorProp.rollup.type === "string") {
+            author = authorProp.rollup.string || "Unknown Author";
+          }
+        }
+
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
         let rating = "";
         if (ratingProp?.type === "number") rating = ratingProp.number.toString();
@@ -81,7 +79,7 @@ try {
           <div class="book-card">
             <h2>{title}</h2>
             <div class="meta">
-              <span><strong>Author:</strong> {book.resolvedAuthor}</span>
+              <span><strong>Author:</strong> {author}</span>
               {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
             </div>
             <div class="review-body">
