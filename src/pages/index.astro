@@ -209,8 +209,8 @@ try {
         </div>
 
         <div class="filter-group">
-          <label for="vibe-filter">Genre</label>
-          <select id="vibe-filter" class="filter-select">
+          <label for="genre-filter">Genre</label>
+          <select id="genre-filter" class="filter-select">
             <option value="all">All Genres</option>
             <option value="Fantasy">Fantasy</option>
             <option value="Sci-Fi">Sci-Fi</option>
@@ -252,7 +252,7 @@ try {
           else if (vibeProp?.type === "rich_text") vibe = vibeProp.rich_text?.[0]?.plain_text || "";
           
           return (
-            <div class="book-card" data-rating={rating} data-vibe={vibe}>
+            <div class="book-card" data-rating={rating} data-genre={vibe}>
               <h2>{title}</h2>
               <div class="meta">
                 <span><strong>Author:</strong> {author}</span>
@@ -279,21 +279,21 @@ try {
 
     <script>
       const ratingSelect = document.getElementById('rating-filter');
-      const vibeSelect = document.getElementById('vibe-filter');
+      const genreSelect = document.getElementById('genre-filter');
       const cards = document.querySelectorAll('.book-card');
 
       function filterCards() {
         const ratingVal = ratingSelect.value;
-        const vibeVal = vibeSelect.value.toLowerCase();
+        const genreVal = genreSelect.value.toLowerCase();
 
         cards.forEach(card => {
           const cardRating = card.getAttribute('data-rating') || '';
-          const cardVibe = (card.getAttribute('data-vibe') || '').toLowerCase();
+          const cardGenre = (card.getAttribute('data-genre') || '').toLowerCase();
 
           const matchesRating = (ratingVal === 'all' || cardRating.includes(ratingVal));
-          const matchesVibe = (vibeVal === 'all' || cardVibe.includes(vibeVal));
+          const matchesGenre = (genreVal === 'all' || cardGenre.includes(genreVal));
 
-          if (matchesRating && matchesVibe) {
+          if (matchesRating && matchesGenre) {
             card.classList.remove('hidden');
           } else {
             card.classList.add('hidden');
@@ -302,7 +302,7 @@ try {
       }
 
       ratingSelect.addEventListener('change', filterCards);
-      vibeSelect.addEventListener('change', filterCards);
+      genreSelect.addEventListener('change', filterCards);
     </script>
   </body>
 </html>
