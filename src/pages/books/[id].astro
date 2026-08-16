@@ -1,0 +1,373 @@
+---
+import { Client } from "@notionhq/client";
+
+export async function getStaticPaths() {
+  const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
+  
+  const response = await notion.databases.query({
+    database_id: import.meta.env.NOTION_DATABASE_ID,
+    filter: {
+      property: "Reviewed",
+      checkbox: { equals: true }
+    }
+  });
+
+  return response.results.map((book) => ({
+    params: { id: book.id },
+  }));
+}
+
+const { id } = Astro.params;
+const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
+
+let book = null;
+let contentBlocks = [];
+let errorMessage = "";
+
+try {
+  book = await notion.pages.retrieve({ page_id: id });
+  const blocksResponse = await notion.blocks.children.list({ block_id: id });
+  contentBlocks = blocksResponse.results;
+} catch (error) {
+  errorMessage = error.message;
+}
+
+const props = book?.properties || {};
+
+const title = props["Title"]?.title?.[0]?.plain_text || "Untitled";
+
+const authorArray = props["Author name for Blog"]?.rollup?.array;
+let author = "Unknown Author";
+if (authorArray && authorArray.length > 0) {
+  const names = authorArray.map((item) => item.title?.[0]?.plain_text).filter(Boolean);
+  if (names.length > 0) author = names.join(", ");
+}
+
+const ratingProp = props["Rating Number"] || props["Star Rating"];
+let rating = "";
+if (ratingProp?.type === "number") rating = ratingProp.number.toString();
+else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
+else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
+
+const vibe = props["Vibe"]?.select?.name || "";
+const pace = props["Pace"]?.select?.name || "";
+const mood = props["Mood"]?.multi_select?.map(m => m.name) || [];
+const tropes = props["Tropes"]?.multi_select?.map(t => t.name) || [];
+const specialTags = props["Special Tags"]?.multi_select?.map(s => s.name) || [];
+const brainpower = props["Brainpower"]?.select?.name || "";
+const storyFocus = props["Story Focus"]?.select?.name || "";
+const romanceLevel = props["Romance Level"]?.select?.name || "";
+const stakes = props["Stakes"]?.select?.name || "";
+const worldbuilding = props["Worldbuilding"]?.select?.name || "";
+const lengthFeel = props["Length Feel"]?.select?.name || "";
+const representation = props["Representation"]?.multi_select?.map(r => r.name) || [];
+
+const mediaProp = props["Cover"] || props["Files & media"] || props["Image"];
+let coverUrl = "";
+if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
+  const fileItem = mediaProp.files[0];
+  coverUrl = fileItem.file?.url || fileItem.external?.url || "";
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{title} | Cherie Reads</title>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <style>
+      :root {
+        --card-bg: #fcfbf9;
+        --border-color: #c4d6c7;
+        --text-color: #2c352d;
+        --text-muted: #556358;
+        --accent: #1e3d24;
+        --accent-hover: #122617;
+        --gold-accent: #8c6d33;
+        --gold-bg: #fbf6ec;
+        --gold-border: #e6dcc5;
+        --sage-accent: #4a6b52;
+        --sage-bg: #edf3ee;
+        --sage-border: #d3e2d5;
+        --serif-font: "Georgia", "Times New Roman", serif;
+      }
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #d8e4da 0%, #eef3ef 50%, #d2e0d4 100%);
+        color: var(--text-color);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+      header {
+        background: rgba(252, 251, 249, 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(30, 61, 36, 0.05);
+      }
+      .brand-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+      .brand-icon {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+      }
+      header h1 {
+        margin: 0;
+        font-family: var(--serif-font);
+        font-size: 2rem;
+        color: var(--accent);
+        letter-spacing: -0.5px;
+        font-weight: normal;
+        font-style: italic;
+      }
+      nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+      }
+      nav a:hover {
+        color: var(--accent);
+      }
+      .container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      .book-layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 40px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 40px;
+        box-shadow: 0 4px 16px rgba(30, 61, 36, 0.05);
+      }
+      .sidebar-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        border-right: 1px solid var(--border-color);
+        padding-right: 30px;
+      }
+      .cover-large {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      .meta-section h3 {
+        font-family: var(--serif-font);
+        font-size: 1.1rem;
+        color: var(--accent);
+        margin-top: 0;
+        margin-bottom: 8px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 4px;
+      }
+      .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .tag {
+        background: var(--sage-bg);
+        color: var(--sage-accent);
+        border: 1px solid var(--sage-border);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.82rem;
+      }
+      .main-review h2 {
+        font-family: var(--serif-font);
+        font-size: 2.2rem;
+        color: var(--accent);
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-weight: normal;
+      }
+      .review-meta-bar {
+        display: flex;
+        gap: 20px;
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+        font-weight: 500;
+      }
+      .rating-badge {
+        background: var(--gold-bg);
+        color: var(--gold-accent);
+        border: 1px solid var(--gold-border);
+        padding: 2px 10px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .vibe-callout {
+        font-family: var(--serif-font);
+        font-style: italic;
+        color: var(--sage-accent);
+        background: var(--sage-bg);
+        border: 1px solid var(--sage-border);
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 30px;
+        font-size: 1.05rem;
+        border-left: 4px solid var(--sage-accent);
+      }
+      .review-content p {
+        margin-bottom: 1.2em;
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+      @media (max-width: 850px) {
+        .book-layout {
+          grid-template-columns: 1fr;
+          padding: 20px;
+        }
+        .sidebar-meta {
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
+          padding-right: 0;
+          padding-bottom: 30px;
+        }
+        .cover-large {
+          height: 300px;
+          max-width: 200px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="brand-container">
+        <img src="/leaf-svgrepo-com.svg" alt="Leaf Icon" class="brand-icon" />
+        <h1>Cherie Reads</h1>
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+      </nav>
+    </header>
+
+    <div class="container">
+      <a href="/" class="back-link">← Back to All Reviews</a>
+
+      {errorMessage && <div style="background: #fde8e8; color: #9b1c1c; padding: 15px; border-radius: 6px;"><p><strong>Error:</strong> {errorMessage}</p></div>}
+
+      <div class="book-layout">
+        <!-- Sidebar Metadata Panel -->
+        <div class="sidebar-meta">
+          {coverUrl && <img src={coverUrl} alt={`Cover of ${title}`} class="cover-large" />}
+
+          {pace && (
+            <div class="meta-section">
+              <h3>Pace</h3>
+              <span class="tag">{pace}</span>
+            </div>
+          )}
+
+          {mood.length > 0 && (
+            <div class="meta-section">
+              <h3>Mood</h3>
+              <ul class="tags-list">
+                {mood.map(m => <li class="tag">{m}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {tropes.length > 0 && (
+            <div class="meta-section">
+              <h3>Tropes</h3>
+              <ul class="tags-list">
+                {tropes.map(t => <li class="tag">{t}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {specialTags.length > 0 && (
+            <div class="meta-section">
+              <h3>Special Tags</h3>
+              <ul class="tags-list">
+                {specialTags.map(s => <li class="tag">{s}</li>)}
+              </ul>
+            </div>
+          )}
+
+          {(brainpower || storyFocus || romanceLevel || stakes || worldbuilding || lengthFeel) && (
+            <div class="meta-section">
+              <h3>Details</h3>
+              <ul class="tags-list">
+                {brainpower && <li class="tag">Brainpower: {brainpower}</li>}
+                {storyFocus && <li class="tag">Focus: {storyFocus}</li>}
+                {romanceLevel && <li class="tag">Romance: {romanceLevel}</li>}
+                {stakes && <li class="tag">Stakes: {stakes}</li>}
+                {worldbuilding && <li class="tag">Worldbuilding: {worldbuilding}</li>}
+                {lengthFeel && <li class="tag">Length: {lengthFeel}</li>}
+              </ul>
+            </div>
+          )}
+
+          {representation.length > 0 && (
+            <div class="meta-section">
+              <h3>Representation</h3>
+              <ul class="tags-list">
+                {representation.map(r => <li class="tag">{r}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <!-- Main Review Section -->
+        <main class="main-review">
+          <h2>{title}</h2>
+          <div class="review-meta-bar">
+            <span><strong>Author:</strong> {author}</span>
+            {rating && <span class="rating-badge">Rating: {rating} ★</span>}
+          </div>
+
+          {vibe && <div class="vibe-callout">{vibe}</div>}
+
+          <div class="review-content">
+            {contentBlocks.map((block) => (
+              block.type === "paragraph" && block.paragraph.rich_text.length > 0 
+                ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
+                : null
+            ))}
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
