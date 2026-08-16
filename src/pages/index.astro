@@ -44,15 +44,16 @@ try {
         --text-muted: #556358;
         --accent: #2e5a36;
         --accent-hover: #1e3d24;
-        --lavender-accent: #7b6d8d;
-        --lavender-bg: #f4f2f6;
+        /* Rich darker cream highlight for vibes */
+        --cream-accent: #5a5347;
+        --cream-bg: #f3eee3;
+        --cream-border: #e0d6c3;
         --serif-font: "Georgia", "Times New Roman", serif;
       }
       body {
         font-family: system-ui, -apple-system, sans-serif;
         margin: 0;
         padding: 0;
-        /* Rich, dimensional sage gradient background */
         background: linear-gradient(135deg, #d8e4da 0%, #eef3ef 50%, #d2e0d4 100%);
         color: var(--text-color);
         line-height: 1.6;
@@ -136,7 +137,6 @@ try {
         flex-direction: column;
         gap: 24px;
       }
-      /* Welcoming Hero Banner */
       .welcome-banner {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
@@ -214,14 +214,15 @@ try {
       .vibe-teaser {
         font-family: var(--serif-font);
         font-style: italic;
-        color: var(--lavender-accent);
-        background: var(--lavender-bg);
+        color: var(--cream-accent);
+        background: var(--cream-bg);
+        border: 1px solid var(--cream-border);
         padding: 6px 12px;
         border-radius: 4px;
         margin-bottom: 15px;
         font-size: 0.95rem;
         display: inline-block;
-        border-left: 3px solid var(--lavender-accent);
+        border-left: 3px solid var(--cream-accent);
       }
       details {
         border-top: 1px solid var(--border-color);
