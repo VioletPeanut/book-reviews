@@ -69,7 +69,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
   coverUrl = fileItem.file?.url || fileItem.external?.url || "";
 }
 
-// Definition dictionary for hover tooltips
+// Complete definition dictionary for all properties, moods, and tropes
 const definitions: Record<string, string> = {
   // Pace
   "Slow Burn": "Deliberate pacing that gradually builds characters, world, or plot.",
@@ -86,7 +86,7 @@ const definitions: Record<string, string> = {
   // Romance Level
   "None": "No meaningful romantic storyline.",
   "Light": "A minor romantic subplot.",
-  "Moderate Romance": "Romance is important but not the primary focus.",
+  "Moderate": "Romance is important but not the primary focus.",
   "Heavy": "Romance is one of the central elements of the story.",
   // Stakes
   "Low": "Consequences are mostly personal.",
@@ -98,8 +98,80 @@ const definitions: Record<string, string> = {
   "Dense": "Complex history, cultures, politics, or magic require sustained attention.",
   // Length Feel
   "Short": "Feels like a quick read.",
-  "Medium Length": "Feels like an average reading commitment.",
-  "Long": "Feels like a significant investment of time."
+  "Medium": "Feels like an average reading commitment.",
+  "Long": "Feels like a significant investment of time.",
+
+  // Moods
+  "Atmospheric": "The setting and mood are a major part of the reading experience, creating a vivid sense of place.",
+  "Adventurous": "Filled with exploration, action, or exciting discoveries that create a sense of adventure.",
+  "Cozy": "Comforting, low-stress, and relaxing. Usually leaves you feeling safe or content.",
+  "Dark": "Explores disturbing, tragic, or morally complex themes with a heavier emotional tone.",
+  "Emotional": "Likely to evoke strong feelings such as joy, grief, hope, or heartbreak.",
+  "Funny": "Humorous, witty, or consistently entertaining.",
+  "Heartwarming": "Leaves you feeling uplifted through kindness, compassion, friendship, or love.",
+  "Hopeful": "Optimistic and encouraging, even when difficult things happen.",
+  "Mysterious": "Built around secrets, unanswered questions, or discovering hidden truths.",
+  "Tense": "Creates suspense, urgency, or anxiety about what will happen next.",
+  "Thought-provoking": "Raises interesting questions or ideas that stay with you after you finish reading.",
+  "Whimsical": "Playful, imaginative, or magical in a lighthearted way.",
+  "Creepy": "Quietly unsettling or eerie, creating a persistent sense of unease rather than relying on intense horror or gore.",
+  "Heartbreaking": "An emotionally devastating story that explores grief, loss, sacrifice, or profound sadness, often leaving a lasting emotional impact.",
+  "Romantic": "A story where love, relationships, or romantic tension create a warm, swoon-worthy, or emotionally intimate reading experience.",
+
+  // Tropes
+  "Academy": "Features a school, university, or formal training environment.",
+  "Amateur Sleuth": "An ordinary person, rather than a professional investigator, solves the central mystery.",
+  "Arranged Marriage": "Characters marry because of outside circumstances.",
+  "Chosen One": "A character is destined, prophesied, or uniquely qualified to fulfill an important role.",
+  "Coming of Age": "The story centers on growing into adulthood or maturity.",
+  "Competition": "The story centers on a contest, tournament, trial, game, or challenge.",
+  "Courtroom Drama": "Legal proceedings, trials, or courtroom testimony are central to the story's conflict.",
+  "Dystopian Society": "Society is oppressive, broken, or authoritarian.",
+  "Dual Timeline": "Two different time periods are interwoven.",
+  "Enemies to Lovers": "Two characters begin as adversaries before developing a romantic relationship.",
+  "Epistolary": "A story told primarily through letters, journal entries, emails, or in-world documents.",
+  "Fake Dating": "Characters pretend to be romantically involved.",
+  "Family Saga": "The story follows the lives, relationships, and legacy of a family across multiple generations.",
+  "Family Secrets": "Hidden family history or secrets are a major focus.",
+  "First Contact": "The first encounter between humanity and intelligent alien life is central to the story.",
+  "Fish Out of Water": "A character struggles to adapt to an unfamiliar environment.",
+  "Forbidden Love": "A romantic relationship is complicated by social, political, or personal barriers.",
+  "Forced Proximity": "Characters are forced to spend significant time together.",
+  "Found Family": "Unrelated characters form deep familial bonds and become each other's chosen family.",
+  "Friends to Lovers": "Friendship gradually develops into romance.",
+  "Grumpy/Sunshine": "A grumpy character and an optimistic character form a relationship.",
+  "Heist": "The plot revolves around planning and executing a theft, con, or high-risk mission.",
+  "Hidden Royalty": "A character's royal heritage is concealed.",
+  "Identity Journey": "The protagonist's search for identity, purpose, or self-understanding drives the story.",
+  "Locked Room Mystery": "A mystery involving an apparently impossible crime.",
+  "Love Triangle": "One character is romantically involved with or pursued by two others.",
+  "Magical School": "Magic is taught in a school or academy.",
+  "Magical Shop": "A magical bookstore, café, or business serves as a central setting.",
+  "Marriage of Convenience": "Characters marry for practical rather than romantic reasons.",
+  "Missing Person": "The search for a missing person is the central mystery or driving force.",
+  "Morally Grey Characters": "Characters regularly make ethically ambiguous choices.",
+  "Multiple POV": "The story is told through the perspectives of multiple primary characters.",
+  "Murder Mystery": "The story revolves around solving a murder or uncovering the killer's identity.",
+  "Opposites Attract": "Characters with contrasting personalities fall in love.",
+  "Origin Story": "The story explores how an important character became the person they are.",
+  "Parallel Worlds": "Multiple realities or universes exist.",
+  "Political Intrigue": "Court politics, government, diplomacy, or power struggles are central.",
+  "Quest": "The protagonist embarks on a journey to accomplish a specific goal.",
+  "Ragtag Crew": "A diverse group of unlikely allies work together.",
+  "Reluctant Hero": "The protagonist is hesitant to take on their role.",
+  "Retelling": "A retelling or reimagining of a classic fairy tale, myth, or legend.",
+  "Revenge": "A desire for vengeance is a primary motivation driving the plot.",
+  "Revolution": "The story centers on overthrowing or resisting an existing political or social order.",
+  "Second Chance Romance": "Former lovers reunite after time apart.",
+  "Secret Identity": "A character hides who they truly are.",
+  "Slice of Life": "Focuses on everyday experiences and ordinary characters rather than a grand plot.",
+  "Slow Burn Romance": "Romance develops gradually over an extended period.",
+  "Survival": "The primary conflict revolves around staying alive in dangerous circumstances.",
+  "Time Travel": "Characters travel through time, and its consequences are central.",
+  "Tragic Romance": "A love story destined to end in heartbreak, sacrifice, or tragedy.",
+  "Trapped": "The protagonist is physically or psychologically confined, making escape the conflict.",
+  "Tournament": "Competition or trials play a central role.",
+  "Unreliable Narrator": "The narrator’s perspective cannot be fully trusted."
 };
 ---
 
@@ -256,7 +328,7 @@ const definitions: Record<string, string> = {
         padding: 6px 10px;
         border-radius: 4px;
         font-size: 0.75rem;
-        width: 180px;
+        width: 200px;
         text-align: center;
         z-index: 10;
         line-height: 1.3;
@@ -348,7 +420,7 @@ const definitions: Record<string, string> = {
           {pace && (
             <div class="meta-section">
               <h3>Pace</h3>
-              <span class="tag" data-tooltip={definitions[pace] || "Pacing of the book"}>{pace}</span>
+              <span class="tag" data-tooltip={definitions[pace] || pace}>{pace}</span>
             </div>
           )}
 
@@ -356,7 +428,7 @@ const definitions: Record<string, string> = {
             <div class="meta-section">
               <h3>Mood</h3>
               <ul class="tags-list">
-                {mood.map(m => <li class="tag" data-tooltip={`Mood characteristic: ${m}`}>{m}</li>)}
+                {mood.map(m => <li class="tag" data-tooltip={definitions[m] || m}>{m}</li>)}
               </ul>
             </div>
           )}
@@ -365,7 +437,7 @@ const definitions: Record<string, string> = {
             <div class="meta-section">
               <h3>Tropes</h3>
               <ul class="tags-list">
-                {tropes.map(t => <li class="tag" data-tooltip={`Story trope: ${t}`}>{t}</li>)}
+                {tropes.map(t => <li class="tag" data-tooltip={definitions[t] || t}>{t}</li>)}
               </ul>
             </div>
           )}
@@ -374,7 +446,7 @@ const definitions: Record<string, string> = {
             <div class="meta-section">
               <h3>Special Tags</h3>
               <ul class="tags-list">
-                {specialTags.map(s => <li class="tag" data-tooltip={`World element: ${s}`}>{s}</li>)}
+                {specialTags.map(s => <li class="tag" data-tooltip={definitions[s] || s}>{s}</li>)}
               </ul>
             </div>
           )}
@@ -383,12 +455,12 @@ const definitions: Record<string, string> = {
             <div class="meta-section">
               <h3>Details</h3>
               <ul class="tags-list">
-                {brainpower && <li class="tag" data-tooltip={definitions[brainpower] || "Required attention level"}>Brainpower: {brainpower}</li>}
-                {storyFocus && <li class="tag" data-tooltip={definitions[storyFocus] || "Primary focus of the story"}>Focus: {storyFocus}</li>}
-                {romanceLevel && <li class="tag" data-tooltip={definitions[romanceLevel] || definitions["Moderate Romance"] || "Level of romance"}>Romance: {romanceLevel}</li>}
-                {stakes && <li class="tag" data-tooltip={definitions[stakes] || "Scale of consequences"}>Stakes: {stakes}</li>}
-                {worldbuilding && <li class="tag" data-tooltip={definitions[worldbuilding] || "Complexity of the setting"}>Worldbuilding: {worldbuilding}</li>}
-                {lengthFeel && <li class="tag" data-tooltip={definitions[lengthFeel] || definitions["Medium Length"] || "Reading time investment"}>Length: {lengthFeel}</li>}
+                {brainpower && <li class="tag" data-tooltip={definitions[brainpower] || brainpower}>Brainpower: {brainpower}</li>}
+                {storyFocus && <li class="tag" data-tooltip={definitions[storyFocus] || storyFocus}>Focus: {storyFocus}</li>}
+                {romanceLevel && <li class="tag" data-tooltip={definitions[romanceLevel] || romanceLevel}>Romance: {romanceLevel}</li>}
+                {stakes && <li class="tag" data-tooltip={definitions[stakes] || stakes}>Stakes: {stakes}</li>}
+                {worldbuilding && <li class="tag" data-tooltip={definitions[worldbuilding] || worldbuilding}>Worldbuilding: {worldbuilding}</li>}
+                {lengthFeel && <li class="tag" data-tooltip={definitions[lengthFeel] || lengthFeel}>Length: {lengthFeel}</li>}
               </ul>
             </div>
           )}
@@ -397,7 +469,7 @@ const definitions: Record<string, string> = {
             <div class="meta-section">
               <h3>Representation</h3>
               <ul class="tags-list">
-                {representation.map(r => <li class="tag" data-tooltip={`Representation tag: ${r}`}>{r}</li>)}
+                {representation.map(r => <li class="tag" data-tooltip={definitions[r] || r}>{r}</li>)}
               </ul>
             </div>
           )}
