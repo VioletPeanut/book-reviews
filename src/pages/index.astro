@@ -73,6 +73,7 @@ try {
         display: flex;
         align-items: center;
         gap: 12px;
+        text-decoration: none;
       }
       .brand-icon {
         width: 22px;
@@ -205,6 +206,10 @@ try {
         overflow: hidden;
         border: 1px solid var(--border-color);
       }
+      .cover-container a {
+        display: block;
+        height: 100%;
+      }
       .cover-container img {
         width: 100%;
         height: 100%;
@@ -224,7 +229,15 @@ try {
         margin-bottom: 6px;
         font-family: var(--serif-font);
         font-size: 1.5rem;
+      }
+      .title-link {
         color: #1a241c;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .title-link:hover {
+        color: var(--accent);
+        text-decoration: underline;
       }
       .meta {
         font-size: 0.95rem;
@@ -253,28 +266,11 @@ try {
         border: 1px solid var(--sage-border);
         padding: 6px 12px;
         border-radius: 4px;
-        margin-bottom: 15px;
+        margin-top: 4px;
         font-size: 0.95rem;
         display: inline-block;
         border-left: 3px solid var(--sage-accent);
-      }
-      .read-more-link {
-        margin-top: auto;
-        padding-top: 12px;
-        border-top: 1px solid var(--border-color);
-        font-weight: 600;
-        color: var(--accent);
-        text-decoration: none;
-        font-size: 0.95rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
         width: fit-content;
-        transition: color 0.2s;
-      }
-      .read-more-link:hover {
-        color: var(--accent-hover);
-        text-decoration: underline;
       }
       .error {
         background: #fde8e8;
@@ -299,10 +295,10 @@ try {
   </head>
   <body>
     <header>
-      <div class="brand-container">
+      <a href="/" class="brand-container">
         <img src="/leaf-svgrepo-com.svg" alt="Leaf Icon" class="brand-icon" />
         <h1>Cherie Reads</h1>
-      </div>
+      </a>
       <nav>
         <a href="/">Home</a>
         <a href="/about">About</a>
@@ -387,21 +383,21 @@ try {
             <div class="book-card" data-rating={rating} data-genre={vibe}>
               {coverUrl && (
                 <div class="cover-container">
-                  <img src={coverUrl} alt={`Cover of ${title}`} loading="lazy" />
+                  <a href={`/books/${book.id}`}>
+                    <img src={coverUrl} alt={`Cover of ${title}`} loading="lazy" />
+                  </a>
                 </div>
               )}
               <div class="book-info">
-                <h2>{title}</h2>
+                <h2>
+                  <a href={`/books/${book.id}`} class="title-link">{title}</a>
+                </h2>
                 <div class="meta">
                   <span><strong>Author:</strong> {author}</span>
                   {rating && <span class="rating-badge">Rating: {rating} ★</span>}
                 </div>
 
                 {vibe && <div class="vibe-teaser">{vibe}</div>}
-                
-                <a href={`/books/${book.id}`} class="read-more-link">
-                  Read Full Review & Details →
-                </a>
               </div>
             </div>
           );
