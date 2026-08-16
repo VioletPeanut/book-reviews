@@ -13,12 +13,7 @@ try {
       property: "Reviewed",
       checkbox: { equals: true }
     },
-    sorts: [
-      {
-        property: "Date Finished",
-        direction: "descending"
-      }
-    ]
+    sorts: [{ property: "Date Finished", direction: "descending" }]
   });
 
   booksWithContent = await Promise.all(
@@ -31,12 +26,15 @@ try {
       if (authorProp?.type === "relation" && authorProp.relation.length > 0) {
         try {
           const authorPage = await notion.pages.retrieve({ page_id: authorProp.relation[0].id });
-          // Specifically target the "Name" property as requested
-          if (authorPage.properties["Name"]) {
-            authorName = authorPage.properties["Name"].title?.[0]?.plain_text || "Unknown Author";
+          // Find the title property dynamically on the linked page
+          const titleKey = Object.keys(authorPage.properties).find(
+            (key) => authorPage.properties[key].type === "title"
+          );
+          if (titleKey) {
+            authorName = authorPage.properties[titleKey].title?.[0]?.plain_text || "Unknown Author";
           }
         } catch (e) {
-          authorName = "Author Data Error";
+          authorName = "Linked Author";
         }
       }
 
@@ -51,7 +49,7 @@ try {
   errorMessage = error.message;
 }
 ---
-
+<!-- Keep the rest of your HTML/Style unchanged -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -75,7 +73,6 @@ try {
         const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
         let rating = "";
-        // Clean rating: checks number or formula/select, avoids duplicate stars
         if (ratingProp?.type === "number") rating = ratingProp.number.toString();
         else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
         else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
