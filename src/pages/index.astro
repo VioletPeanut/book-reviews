@@ -24,6 +24,21 @@ try {
 } catch (error) {
   errorMessage = error.message;
 }
+
+function renderStars(ratingStr) {
+  const num = parseFloat(ratingStr);
+  if (isNaN(num)) return ratingStr;
+  
+  const fullStars = Math.floor(num);
+  const hasHalfStar = num - fullStars >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  
+  let stars = "★".repeat(fullStars);
+  if (hasHalfStar) stars += "⯨";
+  stars += "☆".repeat(emptyStars);
+  
+  return `${stars} ${num.toFixed(num % 1 !== 0 ? 1 : 0)}`;
+}
 ---
 
 <html lang="en">
@@ -253,10 +268,11 @@ try {
         background: var(--gold-bg);
         color: var(--gold-accent);
         border: 1px solid var(--gold-border);
-        padding: 2px 8px;
+        padding: 3px 10px;
         border-radius: 4px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 600;
+        letter-spacing: 1px;
       }
       .vibe-teaser {
         font-family: var(--serif-font);
@@ -299,7 +315,7 @@ try {
         <img src="/leaf-svgrepo-com.svg" alt="Leaf Icon" class="brand-icon" />
         <h1>Cherie Reads</h1>
       </a>
-     <nav>
+      <nav>
         <a href="/">Home</a>
         <a href="/guide">Guide</a>
         <a href="/about">About</a>
@@ -395,7 +411,7 @@ try {
                 </h2>
                 <div class="meta">
                   <span><strong>Author:</strong> {author}</span>
-                  {rating && <span class="rating-badge">Rating: {rating} ★</span>}
+                  {rating && <span class="rating-badge">{renderStars(rating)}</span>}
                 </div>
 
                 {vibe && <div class="vibe-teaser">{vibe}</div>}
