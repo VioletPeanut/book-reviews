@@ -127,36 +127,62 @@ function renderStars(ratingStr) {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
         border-radius: 8px;
-        padding: 20px;
+        padding: 24px;
         height: fit-content;
         box-shadow: 0 4px 12px rgba(30, 61, 36, 0.04);
       }
       aside h3 {
         margin-top: 0;
         font-family: var(--serif-font);
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         border-bottom: 1px solid var(--border-color);
-        padding-bottom: 8px;
+        padding-bottom: 10px;
         color: var(--accent);
+        font-weight: normal;
+        font-style: italic;
       }
-      .filter-group {
-        margin-bottom: 16px;
+      .filter-section {
+        margin-bottom: 20px;
       }
-      .filter-group label {
+      .filter-section:last-child {
+        margin-bottom: 0;
+      }
+      .filter-label {
         display: block;
         font-size: 0.85rem;
         font-weight: 600;
         color: var(--text-muted);
-        margin-bottom: 6px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
-      .filter-select {
-        width: 100%;
-        padding: 8px;
+      .filter-pills {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .filter-pill {
+        background: #f5f2eb;
         border: 1px solid var(--border-color);
-        border-radius: 4px;
-        background: #ffffff;
         color: var(--text-color);
+        padding: 6px 10px;
+        border-radius: 4px;
         font-size: 0.9rem;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+      .filter-pill:hover {
+        background: var(--sage-bg);
+        border-color: var(--sage-accent);
+        color: var(--sage-accent);
+      }
+      .filter-pill.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fcfbf9;
+        font-weight: 500;
       }
       .feed {
         display: flex;
@@ -323,32 +349,44 @@ function renderStars(ratingStr) {
     </header>
 
     <div class="layout">
-      <!-- Sidebar Dropdown Filters -->
+      <!-- Charming Sidebar Filters -->
       <aside>
-        <h3>Filter Reviews</h3>
+        <h3>Find Your Next Read</h3>
         
-        <div class="filter-group">
-          <label for="rating-filter">Star Rating</label>
-          <select id="rating-filter" class="filter-select">
-            <option value="all">All Ratings</option>
-            <option value="5">5 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="2">2 Stars</option>
-            <option value="1">1 Star</option>
-          </select>
+        <div class="filter-section">
+          <span class="filter-label">Rating</span>
+          <div class="filter-pills" id="rating-filter">
+            <button class="filter-pill active" data-value="all">All Ratings</button>
+            <button class="filter-pill" data-value="5">★★★★★ 5 Stars</button>
+            <button class="filter-pill" data-value="4">★★★★☆ 4 Stars</button>
+            <button class="filter-pill" data-value="3">★★★☆☆ 3 Stars</button>
+            <button class="filter-pill" data-value="2">★★☆☆☆ 2 Stars</button>
+            <button class="filter-pill" data-value="1">★☆☆☆☆ 1 Star</button>
+          </div>
         </div>
 
-        <div class="filter-group">
-          <label for="genre-filter">Genre</label>
-          <select id="genre-filter" class="filter-select">
-            <option value="all">All Genres</option>
-            <option value="Fantasy">Fantasy</option>
-            <option value="Sci-Fi">Sci-Fi</option>
-            <option value="Romance">Romance</option>
-            <option value="Historical">Historical</option>
-            <option value="Mystery">Mystery</option>
-          </select>
+        <div class="filter-section" style="margin-top: 24px;">
+          <span class="filter-label">Genre</span>
+          <div class="filter-pills" id="genre-filter">
+            <button class="filter-pill active" data-value="all">All Genres</button>
+            <button class="filter-pill" data-value="Fantasy">Fantasy</button>
+            <button class="filter-pill" data-value="Sci-Fi">Sci-Fi</button>
+            <button class="filter-pill" data-value="Romance">Romance</button>
+            <button class="filter-pill" data-value="Historical">Historical</button>
+            <button class="filter-pill" data-value="Mystery">Mystery</button>
+          </div>
+        </div>
+
+        <div class="filter-section" style="margin-top: 24px;">
+          <span class="filter-label">Tropes</span>
+          <div class="filter-pills" id="trope-filter">
+            <button class="filter-pill active" data-value="all">All Tropes</button>
+            <button class="filter-pill" data-value="Enemies to Lovers">Enemies to Lovers</button>
+            <button class="filter-pill" data-value="Found Family">Found Family</button>
+            <button class="filter-pill" data-value="Chosen One">Chosen One</button>
+            <button class="filter-pill" data-value="Slow Burn">Slow Burn</button>
+            <button class="filter-pill" data-value="Forced Proximity">Forced Proximity</button>
+          </div>
         </div>
       </aside>
 
@@ -389,6 +427,8 @@ function renderStars(ratingStr) {
           else if (vibeProp?.type === "multi_select") vibe = vibeProp.multi_select?.map(v => v.name).join(', ') || "";
           else if (vibeProp?.type === "rich_text") vibe = vibeProp.rich_text?.[0]?.plain_text || "";
 
+          const tropesList = book.properties["Tropes"]?.multi_select?.map(t => t.name).join(', ') || "";
+
           const mediaProp = book.properties["Cover"] || book.properties["Files & media"] || book.properties["Image"];
           let coverUrl = "";
           if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
@@ -397,7 +437,7 @@ function renderStars(ratingStr) {
           }
           
           return (
-            <div class="book-card" data-rating={rating} data-genre={vibe}>
+            <div class="book-card" data-rating={rating} data-genre={vibe} data-tropes={tropesList}>
               {coverUrl && (
                 <div class="cover-container">
                   <a href={`/books/${book.id}`}>
@@ -423,22 +463,26 @@ function renderStars(ratingStr) {
     </div>
 
     <script>
-      const ratingSelect = document.getElementById('rating-filter');
-      const genreSelect = document.getElementById('genre-filter');
+      let currentRating = 'all';
+      let currentGenre = 'all';
+      let currentTrope = 'all';
+
+      const ratingButtons = document.querySelectorAll('#rating-filter .filter-pill');
+      const genreButtons = document.querySelectorAll('#genre-filter .filter-pill');
+      const tropeButtons = document.querySelectorAll('#trope-filter .filter-pill');
       const cards = document.querySelectorAll('.book-card');
 
       function filterCards() {
-        const ratingVal = ratingSelect.value;
-        const genreVal = genreSelect.value.toLowerCase();
-
         cards.forEach(card => {
           const cardRating = card.getAttribute('data-rating') || '';
           const cardGenre = (card.getAttribute('data-genre') || '').toLowerCase();
+          const cardTropes = (card.getAttribute('data-tropes') || '').toLowerCase();
 
-          const matchesRating = (ratingVal === 'all' || cardRating.includes(ratingVal));
-          const matchesGenre = (genreVal === 'all' || cardGenre.includes(genreVal));
+          const matchesRating = (currentRating === 'all' || cardRating.includes(currentRating));
+          const matchesGenre = (currentGenre === 'all' || cardGenre.includes(currentGenre.toLowerCase()));
+          const matchesTrope = (currentTrope === 'all' || cardTropes.includes(currentTrope.toLowerCase()));
 
-          if (matchesRating && matchesGenre) {
+          if (matchesRating && matchesGenre && matchesTrope) {
             card.classList.remove('hidden');
           } else {
             card.classList.add('hidden');
@@ -446,8 +490,32 @@ function renderStars(ratingStr) {
         });
       }
 
-      ratingSelect.addEventListener('change', filterCards);
-      genreSelect.addEventListener('change', filterCards);
+      ratingButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          ratingButtons.forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          currentRating = e.target.getAttribute('data-value');
+          filterCards();
+        });
+      });
+
+      genreButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          genreButtons.forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          currentGenre = e.target.getAttribute('data-value');
+          filterCards();
+        });
+      });
+
+      tropeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          tropeButtons.forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          currentTrope = e.target.getAttribute('data-value');
+          filterCards();
+        });
+      });
     </script>
   </body>
 </html>
