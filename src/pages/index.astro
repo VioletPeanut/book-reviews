@@ -18,11 +18,7 @@ try {
 
   booksWithContent = await Promise.all(
     response.results.map(async (book) => {
-      const blocksResponse = await notion.blocks.children.list({ block_id: book.id });
-      return {
-        ...book,
-        contentBlocks: blocksResponse.results,
-      };
+      return book;
     })
   );
 } catch (error) {
@@ -46,7 +42,6 @@ try {
         --accent-hover: #122617;
         --hero-bg: #f5f0e6;
         --hero-border: #d8cebc;
-        /* Subtle color accent variables */
         --gold-accent: #8c6d33;
         --gold-bg: #fbf6ec;
         --gold-border: #e6dcc5;
@@ -221,6 +216,8 @@ try {
       }
       .book-info {
         flex-grow: 1;
+        display: flex;
+        flex-direction: column;
       }
       .book-card h2 {
         margin-top: 0;
@@ -239,7 +236,6 @@ try {
         gap: 15px;
         flex-wrap: wrap;
       }
-      /* Muted Gold Rating Badge */
       .rating-badge {
         background: var(--gold-bg);
         color: var(--gold-accent);
@@ -249,7 +245,6 @@ try {
         font-size: 0.85rem;
         font-weight: 600;
       }
-      /* Soft Sage Vibe / Genre Tag */
       .vibe-teaser {
         font-family: var(--serif-font);
         font-style: italic;
@@ -263,26 +258,23 @@ try {
         display: inline-block;
         border-left: 3px solid var(--sage-accent);
       }
-      details {
-        border-top: 1px solid var(--border-color);
+      .read-more-link {
+        margin-top: auto;
         padding-top: 12px;
-      }
-      summary {
-        cursor: pointer;
+        border-top: 1px solid var(--border-color);
         font-weight: 600;
         color: var(--accent);
+        text-decoration: none;
         font-size: 0.95rem;
-        user-select: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        transition: color 0.2s;
       }
-      summary:hover {
+      .read-more-link:hover {
         color: var(--accent-hover);
         text-decoration: underline;
-      }
-      .review-body {
-        margin-top: 15px;
-      }
-      .review-body p {
-        margin-bottom: 1em;
       }
       .error {
         background: #fde8e8;
@@ -407,16 +399,9 @@ try {
 
                 {vibe && <div class="vibe-teaser">{vibe}</div>}
                 
-                <details>
-                  <summary>Read Review</summary>
-                  <div class="review-body">
-                    {book.contentBlocks.map((block) => (
-                      block.type === "paragraph" && block.paragraph.rich_text.length > 0 
-                        ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
-                        : null
-                    ))}
-                  </div>
-                </details>
+                <a href={`/books/${book.id}`} class="read-more-link">
+                  Read Full Review & Details →
+                </a>
               </div>
             </div>
           );
