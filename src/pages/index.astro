@@ -57,8 +57,15 @@ try {
       {booksWithContent.map((book) => {
         const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
         
-        // Exact path matching your working rollup structure
-        const author = book.properties["Author name for Blog"]?.rollup?.array?.[0]?.title?.[0]?.plain_text || "Unknown Author";
+        // Handle single or multiple authors cleanly from the rollup array
+        const authorArray = book.properties["Author name for Blog"]?.rollup?.array;
+        let author = "Unknown Author";
+        if (authorArray && authorArray.length > 0) {
+          const names = authorArray.map((item) => item.title?.[0]?.plain_text).filter(Boolean);
+          if (names.length > 0) {
+            author = names.join(", ");
+          }
+        }
 
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
         let rating = "";
