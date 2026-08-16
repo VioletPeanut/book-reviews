@@ -21,32 +21,22 @@ try {
     ]
   });
 
-  // For each book, fetch its page blocks AND resolve the author relation name
   booksWithContent = await Promise.all(
     response.results.map(async (book) => {
-      // 1. Fetch content blocks
-      const blocksResponse = await notion.blocks.children.list({
-        block_id: book.id,
-      });
-
-      // 2. Resolve Author name if it's a relation
+      const blocksResponse = await notion.blocks.children.list({ block_id: book.id });
+      
       let authorName = "Unknown Author";
       const authorProp = book.properties["Author"];
       
       if (authorProp?.type === "relation" && authorProp.relation.length > 0) {
         try {
-          const authorPageId = authorProp.relation[0].id;
-          const authorPage = await notion.pages.retrieve({ page_id: authorPageId });
-          
-          // Find the title property of the author page dynamically
-          const authorTitleKey = Object.keys(authorPage.properties).find(
-            (key) => authorPage.properties[key].type === "title"
-          );
-          if (authorTitleKey) {
-            authorName = authorPage.properties[authorTitleKey].title?.[0]?.plain_text || "Unknown Author";
+          const authorPage = await notion.pages.retrieve({ page_id: authorProp.relation[0].id });
+          // Specifically target the "Name" property as requested
+          if (authorPage.properties["Name"]) {
+            authorName = authorPage.properties["Name"].title?.[0]?.plain_text || "Unknown Author";
           }
         } catch (e) {
-          authorName = "Linked Author";
+          authorName = "Author Data Error";
         }
       }
 
@@ -57,7 +47,6 @@ try {
       };
     })
   );
-
 } catch (error) {
   errorMessage = error.message;
 }
@@ -69,91 +58,41 @@ try {
     <meta name="viewport" content="width=device-width" />
     <title>My Book Reviews</title>
     <style>
-      body {
-        font-family: system-ui, -apple-system, sans-serif;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
-        line-height: 1.6;
-        color: #333;
-        background: #fdfbf7;
-      }
-      h1 {
-        border-bottom: 2px solid #eae6df;
-        padding-bottom: 10px;
-      }
-      .book-card {
-        background: #ffffff;
-        border: 1px solid #eae6df;
-        border-radius: 8px;
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-      }
-      .meta {
-        font-size: 0.95rem;
-        color: #555;
-        margin-bottom: 15px;
-        border-bottom: 1px solid #f0ece1;
-        padding-bottom: 10px;
-        font-weight: 600;
-      }
-      .review-body {
-        margin-top: 15px;
-      }
-      .review-body p {
-        margin-bottom: 1em;
-      }
-      .error {
-        background: #ffebee;
-        color: #c62828;
-        padding: 15px;
-        border-radius: 6px;
-      }
+      body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #333; background: #fdfbf7; }
+      h1 { border-bottom: 2px solid #eae6df; padding-bottom: 10px; }
+      .book-card { background: #ffffff; border: 1px solid #eae6df; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+      .meta { font-size: 0.95rem; color: #555; margin-bottom: 15px; border-bottom: 1px solid #f0ece1; padding-bottom: 10px; font-weight: 600; }
+      .review-body { margin-top: 15px; }
+      .error { background: #ffebee; color: #c62828; padding: 15px; border-radius: 6px; }
     </style>
   </head>
   <body>
     <h1>My Reading Journal & Reviews</h1>
+    {errorMessage && <div class="error"><p><strong>Error:</strong> {errorMessage}</p></div>}
     
-    {errorMessage && (
-      <div class="error">
-        <p><strong>Error connecting to Notion:</strong> {errorMessage}</p>
-      </div>
-    )}
-
-    {booksWithContent.length === 0 && !errorMessage && (
-      <p>No reviewed books found yet. Check the "Reviewed" box on a book page in your Notion library to publish it here!</p>
-    )}
-
     <div>
       {booksWithContent.map((book) => {
         const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
-        const author = book.resolvedAuthor;
-
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
         let rating = "";
-        if (ratingProp?.type === "number") {
-          rating = ratingProp.number.toString();
-        } else if (ratingProp?.type === "select") {
-          rating = ratingProp.select?.name || "";
-        } else if (ratingProp?.type === "formula" && ratingProp.formula?.type === "string") {
-          rating = ratingProp.formula.string;
-        }
+        // Clean rating: checks number or formula/select, avoids duplicate stars
+        if (ratingProp?.type === "number") rating = ratingProp.number.toString();
+        else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
+        else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
         
         return (
           <div class="book-card">
             <h2>{title}</h2>
             <div class="meta">
-              <span><strong>Author:</strong> {author}</span>
+              <span><strong>Author:</strong> {book.resolvedAuthor}</span>
               {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
             </div>
             <div class="review-body">
-              {book.contentBlocks.map((block) => {
-                if (block.type === "paragraph" && block.paragraph.rich_text.length > 0) {
-                  return <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>;
-                }
-                return null;
-              })}
+              {book.contentBlocks.map((block) => (
+                block.type === "paragraph" && block.paragraph.rich_text.length > 0 
+                  ? <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>
+                  : null
+              ))}
             </div>
           </div>
         );
