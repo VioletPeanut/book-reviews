@@ -6,6 +6,22 @@ const notion = new Client({ auth: import.meta.env.NOTION_API_KEY });
 let booksWithContent = [];
 let errorMessage = "";
 
+// Universal helper to extract text from any Notion property or rollup item safely
+function extractText(prop) {
+  if (!prop) return "";
+  if (prop.type === "title") return prop.title?.[0]?.plain_text || "";
+  if (prop.type === "rich_text") return prop.rich_text?.[0]?.plain_text || "";
+  if (prop.type === "select") return prop.select?.name || "";
+  if (prop.type === "rollup") {
+    if (prop.rollup.type === "array" && prop.rollup.array?.length > 0) {
+      return extractText(prop.rollup.array[0]);
+    }
+    if (prop.rollup.type === "string") return prop.rollup.string || "";
+    if (prop.rollup.type === "number") return prop.rollup.number?.toString() || "";
+  }
+  return "";
+}
+
 try {
   const response = await notion.databases.query({
     database_id: import.meta.env.NOTION_DATABASE_ID,
@@ -16,7 +32,6 @@ try {
     sorts: [{ property: "Date Finished", direction: "descending" }]
   });
 
-  // Since we are using a rollup, we only need to fetch the page content blocks now!
   booksWithContent = await Promise.all(
     response.results.map(async (book) => {
       const blocksResponse = await notion.blocks.children.list({ block_id: book.id });
@@ -51,23 +66,8 @@ try {
     
     <div>
       {booksWithContent.map((book) => {
-        const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
-        
-        // Grab the author name directly from your new Rollup property!
-        const authorProp = book.properties["Author name for Blog"];
-        let author = "Unknown Author";
-        if (authorProp?.type === "rollup") {
-          if (authorProp.rollup.type === "array" && authorProp.rollup.array.length > 0) {
-            const firstItem = authorProp.rollup.array[0];
-            if (firstItem.type === "title") {
-              author = firstItem.title[0]?.plain_text || "Unknown Author";
-            } else if (firstItem.type === "rich_text") {
-              author = firstItem.rich_text[0]?.plain_text || "Unknown Author";
-            }
-          } else if (authorProp.rollup.type === "string") {
-            author = authorProp.rollup.string || "Unknown Author";
-          }
-        }
+        const title = extractText(book.properties["Title"]) || "Untitled";
+        const author = extractText(book.properties["Author name for Blog"]) || "Unknown Author";
 
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
         let rating = "";
