@@ -68,6 +68,39 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
   const fileItem = mediaProp.files[0];
   coverUrl = fileItem.file?.url || fileItem.external?.url || "";
 }
+
+// Definition dictionary for hover tooltips
+const definitions: Record<string, string> = {
+  // Pace
+  "Slow Burn": "Deliberate pacing that gradually builds characters, world, or plot.",
+  "Steady": "Consistent pacing with a balance between quieter and faster moments.",
+  "Page Turner": "Difficult to put down because of suspense, action, or constant momentum.",
+  // Brainpower
+  "Easy": "Accessible and straightforward.",
+  "Moderate": "Requires some attention but remains easy to follow.",
+  "Challenging": "Dense, layered, philosophical, or structurally complex.",
+  // Story Focus
+  "Character Driven": "Relationships, growth, and personal journeys are the primary focus.",
+  "Plot Driven": "Events, action, or solving problems drive the story.",
+  "Balanced": "Characters and plot receive roughly equal attention.",
+  // Romance Level
+  "None": "No meaningful romantic storyline.",
+  "Light": "A minor romantic subplot.",
+  "Moderate Romance": "Romance is important but not the primary focus.",
+  "Heavy": "Romance is one of the central elements of the story.",
+  // Stakes
+  "Low": "Consequences are mostly personal.",
+  "Medium": "Consequences affect families, communities, or smaller groups.",
+  "High": "Failure affects kingdoms, civilizations, or the world.",
+  // Worldbuilding
+  "Light World": "The setting is easy to understand with little explanation.",
+  "Moderate World": "The world has unique elements but remains accessible.",
+  "Dense": "Complex history, cultures, politics, or magic require sustained attention.",
+  // Length Feel
+  "Short": "Feels like a quick read.",
+  "Medium Length": "Feels like an average reading commitment.",
+  "Long": "Feels like a significant investment of time."
+};
 ---
 
 <html lang="en">
@@ -200,6 +233,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
         padding: 0;
         list-style: none;
       }
+      /* Tooltip Tag Styling */
       .tag {
         background: var(--sage-bg);
         color: var(--sage-accent);
@@ -207,6 +241,26 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
         padding: 3px 8px;
         border-radius: 4px;
         font-size: 0.82rem;
+        position: relative;
+        cursor: help;
+      }
+      /* Hover Tooltip Popup */
+      .tag:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2c352d;
+        color: #fcfbf9;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        width: 180px;
+        text-align: center;
+        z-index: 10;
+        line-height: 1.3;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
       .main-review h2 {
         font-family: var(--serif-font);
@@ -294,7 +348,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
           {pace && (
             <div class="meta-section">
               <h3>Pace</h3>
-              <span class="tag">{pace}</span>
+              <span class="tag" data-tooltip={definitions[pace] || "Pacing of the book"}>{pace}</span>
             </div>
           )}
 
@@ -302,7 +356,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
             <div class="meta-section">
               <h3>Mood</h3>
               <ul class="tags-list">
-                {mood.map(m => <li class="tag">{m}</li>)}
+                {mood.map(m => <li class="tag" data-tooltip={`Mood characteristic: ${m}`}>{m}</li>)}
               </ul>
             </div>
           )}
@@ -311,7 +365,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
             <div class="meta-section">
               <h3>Tropes</h3>
               <ul class="tags-list">
-                {tropes.map(t => <li class="tag">{t}</li>)}
+                {tropes.map(t => <li class="tag" data-tooltip={`Story trope: ${t}`}>{t}</li>)}
               </ul>
             </div>
           )}
@@ -320,7 +374,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
             <div class="meta-section">
               <h3>Special Tags</h3>
               <ul class="tags-list">
-                {specialTags.map(s => <li class="tag">{s}</li>)}
+                {specialTags.map(s => <li class="tag" data-tooltip={`World element: ${s}`}>{s}</li>)}
               </ul>
             </div>
           )}
@@ -329,12 +383,12 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
             <div class="meta-section">
               <h3>Details</h3>
               <ul class="tags-list">
-                {brainpower && <li class="tag">Brainpower: {brainpower}</li>}
-                {storyFocus && <li class="tag">Focus: {storyFocus}</li>}
-                {romanceLevel && <li class="tag">Romance: {romanceLevel}</li>}
-                {stakes && <li class="tag">Stakes: {stakes}</li>}
-                {worldbuilding && <li class="tag">Worldbuilding: {worldbuilding}</li>}
-                {lengthFeel && <li class="tag">Length: {lengthFeel}</li>}
+                {brainpower && <li class="tag" data-tooltip={definitions[brainpower] || "Required attention level"}>Brainpower: {brainpower}</li>}
+                {storyFocus && <li class="tag" data-tooltip={definitions[storyFocus] || "Primary focus of the story"}>Focus: {storyFocus}</li>}
+                {romanceLevel && <li class="tag" data-tooltip={definitions[romanceLevel] || definitions["Moderate Romance"] || "Level of romance"}>Romance: {romanceLevel}</li>}
+                {stakes && <li class="tag" data-tooltip={definitions[stakes] || "Scale of consequences"}>Stakes: {stakes}</li>}
+                {worldbuilding && <li class="tag" data-tooltip={definitions[worldbuilding] || "Complexity of the setting"}>Worldbuilding: {worldbuilding}</li>}
+                {lengthFeel && <li class="tag" data-tooltip={definitions[lengthFeel] || definitions["Medium Length"] || "Reading time investment"}>Length: {lengthFeel}</li>}
               </ul>
             </div>
           )}
@@ -343,7 +397,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
             <div class="meta-section">
               <h3>Representation</h3>
               <ul class="tags-list">
-                {representation.map(r => <li class="tag">{r}</li>)}
+                {representation.map(r => <li class="tag" data-tooltip={`Representation tag: ${r}`}>{r}</li>)}
               </ul>
             </div>
           )}
