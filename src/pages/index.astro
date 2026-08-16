@@ -98,25 +98,24 @@ try {
         border-bottom: 1px solid var(--border-color);
         padding-bottom: 8px;
       }
-      .filter-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+      .filter-group {
+        margin-bottom: 16px;
       }
-      .filter-list li {
-        margin-bottom: 10px;
-      }
-      .filter-list a {
-        color: var(--text-muted);
-        text-decoration: none;
+      .filter-group label {
         display: block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        transition: background 0.2s;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 6px;
       }
-      .filter-list a:hover {
-        background: #f4efe6;
-        color: var(--accent);
+      .filter-select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-size: 0.9rem;
       }
       .feed {
         display: flex;
@@ -129,6 +128,10 @@ try {
         border-radius: 8px;
         padding: 24px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: opacity 0.2s ease;
+      }
+      .book-card.hidden {
+        display: none;
       }
       .book-card h2 {
         margin-top: 0;
@@ -189,17 +192,33 @@ try {
     </header>
 
     <div class="layout">
-      <!-- Sidebar Navigation / Filters -->
+      <!-- Sidebar Dropdown Filters -->
       <aside>
         <h3>Filter Reviews</h3>
-        <p style="font-size: 0.85rem; color: #777;">Browse by rating or view all published thoughts.</p>
-        <ul class="filter-list">
-          <li><a href="/">All Reviews</a></li>
-          <li><a href="#5-stars">5 Star Reads</a></li>
-          <li><a href="#4-stars">4 Star Reads</a></li>
-          <li><a href="#fantasy">Fantasy</a></li>
-          <li><a href="#sci-fi">Sci-Fi</a></li>
-        </ul>
+        
+        <div class="filter-group">
+          <label for="rating-filter">Star Rating</label>
+          <select id="rating-filter" class="filter-select">
+            <option value="all">All Ratings</option>
+            <option value="5">5 Stars</option>
+            <option value="4">4 Stars</option>
+            <option value="3">3 Stars</option>
+            <option value="2">2 Stars</option>
+            <option value="1">1 Star</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="vibe-filter">Vibe / Genre</label>
+          <select id="vibe-filter" class="filter-select">
+            <option value="all">All Vibes</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Romance">Romance</option>
+            <option value="Historical">Historical</option>
+            <option value="Mystery">Mystery</option>
+          </select>
+        </div>
       </aside>
 
       <!-- Main Review Feed -->
@@ -226,15 +245,14 @@ try {
           else if (ratingProp?.type === "select") rating = ratingProp.select?.name || "";
           else if (ratingProp?.type === "formula") rating = ratingProp.formula.string || ratingProp.formula.number?.toString() || "";
 
-          // Grab the Vibe property (handles select, multi_select, or rich_text)
           const vibeProp = book.properties["Vibe"] || book.properties["Genre"];
           let vibe = "";
           if (vibeProp?.type === "select") vibe = vibeProp.select?.name || "";
-          else if (vibeProp?.type === "multi_select") vibe = vibeProp.multi_select?.map(v => v.name).join(", ") || "";
+          else if (vibeProp?.type === "multi_select") vibe = vibeProp.multi_select?.map(v => v.name).join(', ') || "";
           else if (vibeProp?.type === "rich_text") vibe = vibeProp.rich_text?.[0]?.plain_text || "";
           
           return (
-            <div class="book-card">
+            <div class="book-card" data-rating={rating} data-vibe={vibe}>
               <h2>{title}</h2>
               <div class="meta">
                 <span><strong>Author:</strong> {author}</span>
@@ -258,5 +276,33 @@ try {
         })}
       </main>
     </div>
+
+    <script>
+      const ratingSelect = document.getElementById('rating-filter');
+      const vibeSelect = document.getElementById('vibe-filter');
+      const cards = document.querySelectorAll('.book-card');
+
+      function filterCards() {
+        const ratingVal = ratingSelect.value;
+        const vibeVal = vibeSelect.value.toLowerCase();
+
+        cards.forEach(card => {
+          const cardRating = card.getAttribute('data-rating') || '';
+          const cardVibe = (card.getAttribute('data-vibe') || '').toLowerCase();
+
+          const matchesRating = (ratingVal === 'all' || cardRating.includes(ratingVal));
+          const matchesVibe = (vibeVal === 'all' || cardVibe.includes(vibeVal));
+
+          if (matchesRating && matchesVibe) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      }
+
+      ratingSelect.addEventListener('change', filterCards);
+      vibeSelect.addEventListener('change', filterCards);
+    </script>
   </body>
 </html>
