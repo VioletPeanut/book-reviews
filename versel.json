@@ -1,8 +1,3 @@
 {
-  "framework": "astro",
-  "functions": {
-    "app/entry.mjs": {
-      "runtime": "nodejs24.x"
-    }
-  }
+  "framework": "astro"
 }
