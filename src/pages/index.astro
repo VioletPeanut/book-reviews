@@ -21,14 +21,41 @@ try {
     ]
   });
 
-  // For each book found, fetch the blocks (content) inside that page
+  // For each book, fetch its page blocks AND resolve the author relation name
   booksWithContent = await Promise.all(
     response.results.map(async (book) => {
+      // 1. Fetch content blocks
       const blocksResponse = await notion.blocks.children.list({
         block_id: book.id,
       });
+
+      // 2. Resolve Author name if it's a relation
+      let authorName = "Unknown Author";
+      const authorProp = book.properties["Author"];
+      
+      if (authorProp?.type === "relation" && authorProp.relation.length > 0) {
+        try {
+          const authorPageId = authorProp.relation[0].id;
+          const authorPage = await notion.pages.retrieve({ page_id: authorPageId });
+          // Find the title property of the author page
+          const authorTitleKey = Object.keys(authorPage.properties).find(
+            (key) => authorPage.properties[key].type === "title"
+          );
+          if (authorTitleKey) {
+            authorName = authorPage.properties[authorTitleKey].title?.[0]?.plain_text || "Unknown Author";
+          }
+        } catch (e) {
+          authorName = "Linked Author";
+        }
+      } else if (authorProp?.rich_text) {
+        authorName = authorProp.rich_text[0]?.plain_text || "Unknown Author";
+      } else if (authorProp?.select) {
+        authorName = authorProp.select.name;
+      }
+
       return {
         ...book,
+        resolvedAuthor: authorName,
         contentBlocks: blocksResponse.results,
       };
     })
@@ -103,16 +130,7 @@ try {
     <div>
       {booksWithContent.map((book) => {
         const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
-        
-        const authorProp = book.properties["Author"];
-        let author = "Unknown Author";
-        if (authorProp?.type === "relation") {
-          author = authorProp.relation.length > 0 ? "Linked Author" : "Unknown Author";
-        } else if (authorProp?.rich_text) {
-          author = authorProp.rich_text[0]?.plain_text || "Unknown Author";
-        } else if (authorProp?.select) {
-          author = authorProp.select.name;
-        }
+        const author = book.resolvedAuthor;
 
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
         let rating = "No rating";
@@ -139,7 +157,6 @@ try {
                 if (block.type === "paragraph" && block.paragraph.rich_text.length > 0) {
                   return <p>{block.paragraph.rich_text.map((t) => t.plain_text).join("")}</p>;
                 }
-                // You can expand this if you use headings or bullet lists in your reviews later!
                 return null;
               })}
             </div>
