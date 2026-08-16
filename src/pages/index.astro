@@ -38,9 +38,9 @@ try {
     <script defer src="/_vercel/insights/script.js"></script>
     <style>
       :root {
-        --bg-color: #f0f4f1;
-        --card-bg: #ffffff;
-        --border-color: #d2ded4;
+        --bg-color: #ebf2ed;
+        --card-bg: #fcfbf9;
+        --border-color: #ccdcd1;
         --text-color: #2c352d;
         --text-muted: #556358;
         --accent: #2e5a36;
@@ -53,7 +53,13 @@ try {
         font-family: system-ui, -apple-system, sans-serif;
         margin: 0;
         padding: 0;
-        background: var(--bg-color);
+        background-color: var(--bg-color);
+        /* Subtle paper texture overlay using CSS gradients */
+        background-image: 
+          radial-gradient(rgba(46, 90, 54, 0.03) 1px, transparent 0),
+          radial-gradient(rgba(46, 90, 54, 0.02) 1px, transparent 0);
+        background-size: 24px 24px;
+        background-position: 0 0, 12px 12px;
         color: var(--text-color);
         line-height: 1.6;
       }
@@ -125,7 +131,7 @@ try {
         padding: 8px;
         border: 1px solid var(--border-color);
         border-radius: 4px;
-        background: var(--bg-color);
+        background: #ffffff;
         color: var(--text-color);
         font-size: 0.9rem;
       }
@@ -139,14 +145,14 @@ try {
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 24px;
-        box-shadow: 0 2px 4px rgba(46, 90, 54, 0.03);
+        box-shadow: 0 2px 6px rgba(46, 90, 54, 0.04);
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         display: flex;
         gap: 20px;
       }
       .book-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 16px rgba(46, 90, 54, 0.08);
+        box-shadow: 0 8px 20px rgba(46, 90, 54, 0.08);
         border-color: var(--accent);
       }
       .book-card.hidden {
@@ -199,7 +205,7 @@ try {
         border-left: 3px solid var(--lavender-accent);
       }
       details {
-        border-top: 1px solid #e3ece4;
+        border-top: 1px solid var(--border-color);
         padding-top: 12px;
       }
       summary {
