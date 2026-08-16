@@ -44,10 +44,15 @@ try {
         --text-muted: #556358;
         --accent: #1e3d24;
         --accent-hover: #122617;
-        --cream-accent: #5a5347;
-        /* Distinct warm cream background for the hero hero section */
         --hero-bg: #f5f0e6;
         --hero-border: #d8cebc;
+        /* Subtle color accent variables */
+        --gold-accent: #8c6d33;
+        --gold-bg: #fbf6ec;
+        --gold-border: #e6dcc5;
+        --sage-accent: #4a6b52;
+        --sage-bg: #edf3ee;
+        --sage-border: #d3e2d5;
         --serif-font: "Georgia", "Times New Roman", serif;
       }
       body {
@@ -147,7 +152,6 @@ try {
         flex-direction: column;
         gap: 24px;
       }
-      /* Special Hero Banner Styles */
       .welcome-banner {
         background: var(--hero-bg);
         border: 1px solid var(--hero-border);
@@ -230,19 +234,34 @@ try {
         color: var(--text-muted);
         margin-bottom: 10px;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
       }
+      /* Muted Gold Rating Badge */
+      .rating-badge {
+        background: var(--gold-bg);
+        color: var(--gold-accent);
+        border: 1px solid var(--gold-border);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      /* Soft Sage Vibe / Genre Tag */
       .vibe-teaser {
         font-family: var(--serif-font);
         font-style: italic;
-        color: var(--cream-accent);
-        background: #f3eee3;
-        border: 1px solid #e0d6c3;
+        color: var(--sage-accent);
+        background: var(--sage-bg);
+        border: 1px solid var(--sage-border);
         padding: 6px 12px;
         border-radius: 4px;
         margin-bottom: 15px;
         font-size: 0.95rem;
         display: inline-block;
-        border-left: 3px solid var(--accent);
+        border-left: 3px solid var(--sage-accent);
       }
       details {
         border-top: 1px solid var(--border-color);
@@ -383,7 +402,7 @@ try {
                 <h2>{title}</h2>
                 <div class="meta">
                   <span><strong>Author:</strong> {author}</span>
-                  {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
+                  {rating && <span class="rating-badge">Rating: {rating} ★</span>}
                 </div>
 
                 {vibe && <div class="vibe-teaser">{vibe}</div>}
