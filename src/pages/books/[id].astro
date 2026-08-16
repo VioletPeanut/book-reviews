@@ -194,8 +194,6 @@ const definitions: Record<string, string> = {
         --accent: #1e3d24;
         --accent-hover: #122617;
         --gold-accent: #8c6d33;
-        --gold-bg: #fbf6ec;
-        --gold-border: #e6dcc5;
         --sage-accent: #4a6b52;
         --sage-bg: #edf3ee;
         --sage-border: #d3e2d5;
@@ -284,6 +282,12 @@ const definitions: Record<string, string> = {
         border-right: 1px solid var(--border-color);
         padding-right: 30px;
       }
+      .cover-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
       .cover-large {
         width: 100%;
         height: 420px;
@@ -291,6 +295,14 @@ const definitions: Record<string, string> = {
         border-radius: 6px;
         border: 1px solid var(--border-color);
         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      }
+      /* Clean standalone gold star rating under cover */
+      .sidebar-rating {
+        color: var(--gold-accent);
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-align: center;
       }
       .meta-section h3 {
         font-family: var(--serif-font);
@@ -345,23 +357,10 @@ const definitions: Record<string, string> = {
         font-weight: normal;
       }
       .review-meta-bar {
-        display: flex;
-        gap: 20px;
         font-size: 1.05rem;
         color: var(--text-muted);
         margin-bottom: 24px;
         font-weight: 500;
-        align-items: center;
-      }
-      .rating-badge {
-        background: var(--gold-bg);
-        color: var(--gold-accent);
-        border: 1px solid var(--gold-border);
-        padding: 3px 10px;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        letter-spacing: 1px;
       }
       .vibe-callout {
         font-family: var(--serif-font);
@@ -420,7 +419,10 @@ const definitions: Record<string, string> = {
       <div class="book-layout">
         <!-- Sidebar Metadata Panel -->
         <div class="sidebar-meta">
-          {coverUrl && <img src={coverUrl} alt={`Cover of ${title}`} class="cover-large" />}
+          <div class="cover-wrapper">
+            {coverUrl && <img src={coverUrl} alt={`Cover of ${title}`} class="cover-large" />}
+            {rating && <div class="sidebar-rating">{renderStars(rating)}</div>}
+          </div>
 
           {pace && (
             <div class="meta-section">
@@ -476,7 +478,6 @@ const definitions: Record<string, string> = {
           <h2>{title}</h2>
           <div class="review-meta-bar">
             <span><strong>Author:</strong> {author}</span>
-            {rating && <span class="rating-badge">{renderStars(rating)}</span>}
           </div>
 
           {vibe && <div class="vibe-callout">{vibe}</div>}
