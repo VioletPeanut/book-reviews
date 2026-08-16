@@ -37,7 +37,8 @@ try {
         try {
           const authorPageId = authorProp.relation[0].id;
           const authorPage = await notion.pages.retrieve({ page_id: authorPageId });
-          // Find the title property of the author page
+          
+          // Find the title property of the author page dynamically
           const authorTitleKey = Object.keys(authorPage.properties).find(
             (key) => authorPage.properties[key].type === "title"
           );
@@ -47,10 +48,6 @@ try {
         } catch (e) {
           authorName = "Linked Author";
         }
-      } else if (authorProp?.rich_text) {
-        authorName = authorProp.rich_text[0]?.plain_text || "Unknown Author";
-      } else if (authorProp?.select) {
-        authorName = authorProp.select.name;
       }
 
       return {
@@ -94,11 +91,12 @@ try {
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
       }
       .meta {
-        font-size: 0.9rem;
-        color: #666;
+        font-size: 0.95rem;
+        color: #555;
         margin-bottom: 15px;
         border-bottom: 1px solid #f0ece1;
         padding-bottom: 10px;
+        font-weight: 600;
       }
       .review-body {
         margin-top: 15px;
@@ -133,24 +131,21 @@ try {
         const author = book.resolvedAuthor;
 
         const ratingProp = book.properties["Rating Number"] || book.properties["Star Rating"];
-        let rating = "No rating";
+        let rating = "";
         if (ratingProp?.type === "number") {
-          rating = ratingProp.number;
+          rating = ratingProp.number.toString();
         } else if (ratingProp?.type === "select") {
-          rating = ratingProp.select?.name || "No rating";
-        } else if (ratingProp?.type === "formula") {
-          if (ratingProp.formula?.type === "string") {
-            rating = ratingProp.formula.string;
-          } else if (ratingProp.formula?.type === "number") {
-            rating = ratingProp.formula.number;
-          }
+          rating = ratingProp.select?.name || "";
+        } else if (ratingProp?.type === "formula" && ratingProp.formula?.type === "string") {
+          rating = ratingProp.formula.string;
         }
         
         return (
           <div class="book-card">
             <h2>{title}</h2>
             <div class="meta">
-              <p><strong>Author:</strong> {author} | <strong>Rating:</strong> {rating}</p>
+              <span><strong>Author:</strong> {author}</span>
+              {rating && <span style="margin-left: 15px;"><strong>Rating:</strong> {rating}</span>}
             </div>
             <div class="review-body">
               {book.contentBlocks.map((block) => {
