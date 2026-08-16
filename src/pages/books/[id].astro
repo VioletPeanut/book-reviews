@@ -60,7 +60,6 @@ const romanceLevel = props["Romance Level"]?.select?.name || "";
 const stakes = props["Stakes"]?.select?.name || "";
 const worldbuilding = props["Worldbuilding"]?.select?.name || "";
 const lengthFeel = props["Length Feel"]?.select?.name || "";
-const representation = props["Representation"]?.multi_select?.map(r => r.name) || [];
 
 const mediaProp = props["Cover"] || props["Files & media"] || props["Image"];
 let coverUrl = "";
@@ -69,7 +68,7 @@ if (mediaProp?.type === "files" && mediaProp.files.length > 0) {
   coverUrl = fileItem.file?.url || fileItem.external?.url || "";
 }
 
-// Complete definition dictionary for all properties, moods, and tropes
+// Complete definition dictionary with distinct keys
 const definitions: Record<string, string> = {
   // Pace
   "Slow Burn": "Deliberate pacing that gradually builds characters, world, or plot.",
@@ -93,8 +92,8 @@ const definitions: Record<string, string> = {
   "Medium": "Consequences affect families, communities, or smaller groups.",
   "High": "Failure affects kingdoms, civilizations, or the world.",
   // Worldbuilding
-  "Light World": "The setting is easy to understand with little explanation.",
-  "Moderate World": "The world has unique elements but remains accessible.",
+  "Light": "The setting is easy to understand with little explanation.",
+  "Moderate": "The world has unique elements but remains accessible.",
   "Dense": "Complex history, cultures, politics, or magic require sustained attention.",
   // Length Feel
   "Short": "Feels like a quick read.",
@@ -461,15 +460,6 @@ const definitions: Record<string, string> = {
                 {stakes && <li class="tag" data-tooltip={definitions[stakes] || stakes}>Stakes: {stakes}</li>}
                 {worldbuilding && <li class="tag" data-tooltip={definitions[worldbuilding] || worldbuilding}>Worldbuilding: {worldbuilding}</li>}
                 {lengthFeel && <li class="tag" data-tooltip={definitions[lengthFeel] || lengthFeel}>Length: {lengthFeel}</li>}
-              </ul>
-            </div>
-          )}
-
-          {representation.length > 0 && (
-            <div class="meta-section">
-              <h3>Representation</h3>
-              <ul class="tags-list">
-                {representation.map(r => <li class="tag" data-tooltip={definitions[r] || r}>{r}</li>)}
               </ul>
             </div>
           )}
