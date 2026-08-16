@@ -45,8 +45,9 @@ try {
         --accent: #1e3d24;
         --accent-hover: #122617;
         --cream-accent: #5a5347;
-        --cream-bg: #f3eee3;
-        --cream-border: #e0d6c3;
+        /* Distinct warm cream background for the hero hero section */
+        --hero-bg: #f5f0e6;
+        --hero-border: #d8cebc;
         --serif-font: "Georgia", "Times New Roman", serif;
       }
       body {
@@ -146,26 +147,36 @@ try {
         flex-direction: column;
         gap: 24px;
       }
+      /* Special Hero Banner Styles */
       .welcome-banner {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
+        background: var(--hero-bg);
+        border: 1px solid var(--hero-border);
         border-radius: 8px;
-        padding: 28px 32px;
-        box-shadow: 0 4px 12px rgba(30, 61, 36, 0.04);
+        padding: 36px 32px;
+        box-shadow: 0 4px 16px rgba(30, 61, 36, 0.05);
         margin-bottom: 4px;
+        text-align: center;
+      }
+      .hero-icon {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        margin-bottom: 12px;
+        opacity: 0.85;
       }
       .welcome-banner h2 {
         margin-top: 0;
         font-family: var(--serif-font);
         color: var(--accent);
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: normal;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
       }
       .welcome-banner p {
-        margin: 0;
+        margin: 0 auto;
+        max-width: 620px;
         color: var(--text-muted);
-        font-size: 1rem;
+        font-size: 1.05rem;
         line-height: 1.6;
       }
       .book-card {
@@ -224,8 +235,8 @@ try {
         font-family: var(--serif-font);
         font-style: italic;
         color: var(--cream-accent);
-        background: var(--cream-bg);
-        border: 1px solid var(--cream-border);
+        background: #f3eee3;
+        border: 1px solid #e0d6c3;
         padding: 6px 12px;
         border-radius: 4px;
         margin-bottom: 15px;
@@ -319,8 +330,9 @@ try {
 
       <!-- Main Review Feed -->
       <main class="feed">
-        <!-- Welcoming Hero Banner -->
+        <!-- Elevated Hero Banner -->
         <div class="welcome-banner">
+          <img src="/leaf-svgrepo-com.svg" alt="Leaf" class="hero-icon" />
           <h2>Welcome to My Reading Sanctuary</h2>
           <p>A quiet corner of the internet dedicated to sweeping fantasy, rich historical fiction, and stories that leave a lasting emotional mark. Grab a cup of tea and browse my digital bookshelf.</p>
         </div>
