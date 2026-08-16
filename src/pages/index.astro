@@ -81,9 +81,15 @@ try {
 
     <div>
       {books.map((book) => {
-        const title = book.properties["Name"]?.title?.[0]?.plain_text || "Untitled";
-        const author = book.properties["Author"]?.rich_text?.[0]?.plain_text || book.properties["Author"]?.select?.name || "Unknown Author";
-        const rating = book.properties["Rating Number"]?.number || "No rating";
+        // Grab the title using your exact "Title" property name
+        const title = book.properties["Title"]?.title?.[0]?.plain_text || "Untitled";
+        
+        // Since Author is a relation, it returns an array of linked page IDs. 
+        // We can indicate it's a linked relation (or display a friendly label).
+        const authorRelation = book.properties["Author"]?.relation;
+        const author = authorRelation && authorRelation.length > 0 ? "Author Linked" : "Unknown Author";
+
+        const rating = book.properties["Rating Number"]?.number || book.properties["Star Rating"]?.select?.name || "No rating";
         const format = book.properties["Format"]?.select?.name || "";
         
         return (
@@ -91,7 +97,7 @@ try {
             <h2>{title}</h2>
             <div class="meta">
               <p><strong>Author:</strong> {author}</p>
-              <p><strong>Rating:</strong> {rating} / 5 ⭐ | <strong>Format:</strong> {format}</p>
+              <p><strong>Rating:</strong> {rating} ⭐ | <strong>Format:</strong> {format}</p>
             </div>
           </div>
         );
