@@ -10,16 +10,8 @@ try {
   const response = await notion.databases.query({
     database_id: import.meta.env.NOTION_DATABASE_ID,
     filter: {
-      and: [
-        {
-          property: "Finished",
-          status: { equals: "Finished!" }
-        },
-        {
-          property: "Reviewed",
-          checkbox: { equals: true }
-        }
-      ]
+      property: "Reviewed",
+      checkbox: { equals: true }
     },
     sorts: [
       {
@@ -80,17 +72,15 @@ try {
     {errorMessage && (
       <div class="error">
         <p><strong>Error connecting to Notion:</strong> {errorMessage}</p>
-        <p>Please check that your NOTION_API_KEY and NOTION_DATABASE_ID environment variables are set correctly in Vercel, and that your database is shared with your integration.</p>
       </div>
     )}
 
     {books.length === 0 && !errorMessage && (
-      <p>No reviewed books found yet. Make sure you have books marked as "Finished!" with the "Reviewed" checkbox checked in Notion!</p>
+      <p>No reviewed books found yet. Check the "Reviewed" box on a book page in your Notion library to publish it here!</p>
     )}
 
     <div>
       {books.map((book) => {
-        // Extract properties based on your schema
         const title = book.properties["Name"]?.title?.[0]?.plain_text || "Untitled";
         const author = book.properties["Author"]?.rich_text?.[0]?.plain_text || book.properties["Author"]?.select?.name || "Unknown Author";
         const rating = book.properties["Rating Number"]?.number || "No rating";
