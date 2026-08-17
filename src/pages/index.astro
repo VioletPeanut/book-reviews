@@ -120,7 +120,7 @@ function renderStars(ratingStr) {
         margin: 40px auto;
         padding: 0 20px;
         display: grid;
-        grid-template-columns: 240px 1fr;
+        grid-template-columns: 260px 1fr;
         gap: 40px;
       }
       aside {
@@ -142,7 +142,7 @@ function renderStars(ratingStr) {
         font-style: italic;
       }
       .filter-section {
-        margin-bottom: 20px;
+        margin-bottom: 24px;
       }
       .filter-section:last-child {
         margin-bottom: 0;
@@ -184,6 +184,51 @@ function renderStars(ratingStr) {
         color: #fcfbf9;
         font-weight: 500;
       }
+      
+      /* Trope Cloud Styling */
+      .trope-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+      .trope-tag {
+        background: #f5f2eb;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 3px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        line-height: 1.2;
+      }
+      .trope-tag:hover {
+        background: var(--sage-bg);
+        border-color: var(--sage-accent);
+        color: var(--sage-accent);
+      }
+      .trope-tag.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fcfbf9;
+        font-weight: 600;
+      }
+      /* Font size weight classes for cloud effect */
+      .trope-lg {
+        font-size: 0.98rem;
+        font-weight: 600;
+        color: var(--accent);
+        background: #efece4;
+      }
+      .trope-md {
+        font-size: 0.88rem;
+      }
+      .trope-sm {
+        font-size: 0.78rem;
+        opacity: 0.85;
+      }
+
       .feed {
         display: flex;
         flex-direction: column;
@@ -350,7 +395,7 @@ function renderStars(ratingStr) {
     </header>
 
     <div class="layout">
-      <!-- Charming Sidebar Filters -->
+      <!-- Charming Sidebar Filters with Trope Cloud -->
       <aside>
         <h3>Find Your Next Read</h3>
         
@@ -366,7 +411,7 @@ function renderStars(ratingStr) {
           </div>
         </div>
 
-        <div class="filter-section" style="margin-top: 24px;">
+        <div class="filter-section">
           <span class="filter-label">Genre</span>
           <div class="filter-pills" id="genre-filter">
             <button class="filter-pill active" data-value="all">All Genres</button>
@@ -378,15 +423,21 @@ function renderStars(ratingStr) {
           </div>
         </div>
 
-        <div class="filter-section" style="margin-top: 24px;">
+        <div class="filter-section">
           <span class="filter-label">Tropes</span>
-          <div class="filter-pills" id="trope-filter">
-            <button class="filter-pill active" data-value="all">All Tropes</button>
-            <button class="filter-pill" data-value="Enemies to Lovers">Enemies to Lovers</button>
-            <button class="filter-pill" data-value="Found Family">Found Family</button>
-            <button class="filter-pill" data-value="Chosen One">Chosen One</button>
-            <button class="filter-pill" data-value="Slow Burn">Slow Burn</button>
-            <button class="filter-pill" data-value="Forced Proximity">Forced Proximity</button>
+          <div class="trope-cloud" id="trope-filter">
+            <button class="trope-tag active trope-lg" data-value="all">All Tropes</button>
+            <button class="trope-tag trope-lg" data-value="Enemies to Lovers">Enemies to Lovers</button>
+            <button class="trope-tag trope-lg" data-value="Found Family">Found Family</button>
+            <button class="trope-tag trope-md" data-value="Chosen One">Chosen One</button>
+            <button class="trope-tag trope-md" data-value="Slow Burn">Slow Burn</button>
+            <button class="trope-tag trope-md" data-value="Forced Proximity">Forced Proximity</button>
+            <button class="trope-tag trope-sm" data-value="Academia">Academia</button>
+            <button class="trope-tag trope-sm" data-value="Retelling">Retelling</button>
+            <button class="trope-tag trope-sm" data-value="Dual Timeline">Dual Timeline</button>
+            <button class="trope-tag trope-sm" data-value="Grumpy/Sunshine">Grumpy/Sunshine</button>
+            <button class="trope-tag trope-sm" data-value="Secret Identity">Secret Identity</button>
+            <button class="trope-tag trope-sm" data-value="Quest">Quest</button>
           </div>
         </div>
       </aside>
@@ -470,7 +521,7 @@ function renderStars(ratingStr) {
 
       const ratingButtons = document.querySelectorAll('#rating-filter .filter-pill');
       const genreButtons = document.querySelectorAll('#genre-filter .filter-pill');
-      const tropeButtons = document.querySelectorAll('#trope-filter .filter-pill');
+      const tropeTags = document.querySelectorAll('#trope-filter .trope-tag');
       const cards = document.querySelectorAll('.book-card');
 
       function filterCards() {
@@ -509,9 +560,9 @@ function renderStars(ratingStr) {
         });
       });
 
-      tropeButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-          tropeButtons.forEach(btn => btn.classList.remove('active'));
+      tropeTags.forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          tropeTags.forEach(t => t.classList.remove('active'));
           e.target.classList.add('active');
           currentTrope = e.target.getAttribute('data-value');
           filterCards();
